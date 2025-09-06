@@ -47,13 +47,13 @@ public class SecurityUtil {
 
     public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
 
-    @Value("${findjob.jwt.base64-secret}")
+    @Value("${petcare.jwt.base64-secret}")
     private String jwtKey;
 
-    @Value("${findjob.jwt.access-token-validity-in-seconds}")
+    @Value("${petcare.jwt.access-token-validity-in-seconds}")
     private long accessTokenExpiration;
 
-    @Value("${findjob.jwt.refresh-token-validity-in-seconds}")
+    @Value("${petcare.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")

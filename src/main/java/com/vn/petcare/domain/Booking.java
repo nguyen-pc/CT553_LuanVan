@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.vn.petcare.util.constant.BookingEnum;
+import com.vn.petcare.util.constant.ClinicStateEnum;
 import com.vn.petcare.util.constant.GenderEnum;
 
 import jakarta.persistence.CollectionTable;
@@ -29,67 +31,37 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-// import com.example.FindJobIT.util.SecurityUtil;
-// import com.example.FindJobIT.util.constant.GenderEnum;
-
 @Entity
-@Table(name = "users")
+@Table(name = "bookings")
 @Getter
 @Setter
-public class User {
+public class Booking {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String name;
+    private String bookingName;
 
-    @NotBlank(message = "email không được để trống")
-    private String email;
+    private Instant bookingDate;
 
-    @NotBlank(message = "password không được để trống")
-    private String password;
-    private int age;
+    private String bookingTime;
 
-    @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
+    // @ManyToOne
+    // @JoinColumn(name = "user_id")
+    // private User user;
 
-    private String address;
-    private String phoneNumber;
-    private String imageUrl;
+    // @ManyToOne
+    // @JoinColumn(name = "clinic_id")
+    // private Clinic clinic;
 
-    @ManyToOne
-    @JoinColumn(name = "clinic_id")
-    private Clinic clinic;
+    private String description;
 
-
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String refreshToken;
+    private BookingEnum status;
 
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
     private String updatedBy;
-
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
-
-    // @PrePersist
-    // public void handleBeforeCreate() {
-    // this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-    // ? SecurityUtil.getCurrentUserLogin().get()
-    // : "";
-
-    // this.createdAt = Instant.now();
-    // }
-
-    // @PreUpdate
-    // public void handleBeforeUpdate() {
-    // this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-    // ? SecurityUtil.getCurrentUserLogin().get()
-    // : "";
-
-    // this.updatedAt = Instant.now();
-    // }
-
 }
+    

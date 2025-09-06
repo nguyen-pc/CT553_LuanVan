@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.vn.petcare.util.SecurityUtil;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -49,21 +51,21 @@ public class Role {
     @JsonIgnore
     List<User> users;
 
-    // @PrePersist
-    // public void handleBeforeCreate() {
-    //     this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-    //             ? SecurityUtil.getCurrentUserLogin().get()
-    //             : "";
+    @PrePersist
+    public void handleBeforeCreate() {
+        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
 
-    //     this.createdAt = Instant.now();
-    // }
+        this.createdAt = Instant.now();
+    }
 
-    // @PreUpdate
-    // public void handleBeforeUpdate() {
-    //     this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-    //             ? SecurityUtil.getCurrentUserLogin().get()
-    //             : "";
+    @PreUpdate
+    public void handleBeforeUpdate() {
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
 
-    //     this.updatedAt = Instant.now();
-    // }
+        this.updatedAt = Instant.now();
+    }
 }
