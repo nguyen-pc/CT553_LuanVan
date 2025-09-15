@@ -30,7 +30,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "projects")
+@Table(name = "campaigns")
 @Getter
 @Setter
 public class Campaign {

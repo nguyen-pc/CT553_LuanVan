@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import com.vn.beta_testing.domain.CompanyProfile;
+import com.vn.beta_testing.domain.Campaign;
 
 @Repository
-public interface CompanyRepository extends JpaRepository<CompanyProfile, Long>, JpaSpecificationExecutor<CompanyProfile> {
-    boolean existsByCompanyEmail(String email);
+public interface CampaignRepository extends JpaRepository<Campaign, Long>, JpaSpecificationExecutor<Campaign> {
+    
 }
