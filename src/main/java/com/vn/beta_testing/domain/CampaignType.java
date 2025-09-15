@@ -1,6 +1,5 @@
 package com.vn.beta_testing.domain;
 
-import java.sql.Date;
 import java.time.Instant;
 import java.util.List;
 
@@ -30,30 +29,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "campaigns")
+@Table(name = "campaign_type")
 @Getter
 @Setter
-public class Campaign {
+public class CampaignType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String title;
+    private String name;
     private String description;
-    private String Instructions;
-    private Instant startDate;
-    private Instant endDate;
-    private boolean status; // Enum
-    private String RewardType;
-    private String RewardValue; 
-
-    @ManyToOne
-    @JoinColumn(name = "project_id")
-    private Project project;
-
-    @ManyToOne
-    @JoinColumn(name = "campaignType_id")
-    private CampaignType campaignType;
 
     private Instant createdAt;
     private Instant updatedAt;

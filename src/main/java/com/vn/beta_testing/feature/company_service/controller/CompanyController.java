@@ -2,6 +2,8 @@ package com.vn.beta_testing.feature.company_service.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,20 +20,30 @@ import com.vn.beta_testing.util.error.IdInvalidException;
 @RequestMapping("/api/v1")
 public class CompanyController {
     private final CompanyService companyService;
-    
+
     public CompanyController(CompanyService companyService) {
         this.companyService = companyService;
+    }
+
+    @GetMapping("/company/{id}")
+    @ApiMessage("Get company by id")
+    public ResponseEntity<CompanyProfile> getCompanyById(@PathVariable("id") Long id) {
+        CompanyProfile companyProfile = this.companyService.fetchCompanyById(id);
+        if (companyProfile == null) {
+            throw new IdInvalidException("Company with id = " + id + " does not exist.");
+        }
+        return ResponseEntity.ok(companyProfile);
     }
 
     @PostMapping("/company/create")
     @ApiMessage("Create a new company")
     public ResponseEntity<CompanyProfile> createCompany(@RequestBody CompanyProfile companyProfile) {
-       boolean isEmailExist = this.companyService.isEmailExist(companyProfile.getCompanyEmail());
+        boolean isEmailExist = this.companyService.isEmailExist(companyProfile.getCompanyEmail());
         if (isEmailExist) {
             throw new IdInvalidException(
                     "Email" + companyProfile.getCompanyEmail() + "da ton tai, vui long su dung email khac");
         }
-       
+
         CompanyProfile createdCompany = companyService.createCompanyProfile(companyProfile);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCompany);
     }
@@ -41,13 +53,39 @@ public class CompanyController {
     public ResponseEntity<CompanyProfile> switchCompanyStatus(@PathVariable("id") Long id) {
         CompanyProfile companyProfile = this.companyService.fetchCompanyById(id);
 
-        if(companyProfile == null) {
+        if (companyProfile == null) {
             throw new IdInvalidException("Company with id = " + id + " does not exist.");
         }
         companyProfile.setActive(!companyProfile.isActive());
-        this.companyService.updateCompanyProfile(companyProfile);
+        this.companyService.updateStatusCompanyProfile(companyProfile);
         return ResponseEntity.ok(companyProfile);
     }
 
-    
+    @PutMapping("/company/update/{id}")
+    @ApiMessage("Update company by owner company")
+    public ResponseEntity<CompanyProfile> updateCompany(@PathVariable("id") Long id,@RequestBody CompanyProfile upCompanyProfile) {
+         CompanyProfile company = this.companyService.fetchCompanyById(id);
+
+        if (company == null) {
+            throw new IdInvalidException("Company with id = " + id + " does not exist.");
+        }
+
+        CompanyProfile cProfile = this.companyService.handleUpdateCompany(upCompanyProfile);
+
+        return ResponseEntity.ok(cProfile);
+    }
+
+    @DeleteMapping("/company/delete/{id}")
+    @ApiMessage("Delete company")
+    public ResponseEntity<String> deleteCompany(@PathVariable("id") Long id){
+        CompanyProfile company = this.companyService.fetchCompanyById(id);
+
+        if (company == null) {
+            throw new IdInvalidException("Company with id = " + id + " does not exist.");
+        }
+
+        this.companyService.handleDelete(id);
+         return ResponseEntity.status(HttpStatus.OK).body("delete success");
+    }
+
 }

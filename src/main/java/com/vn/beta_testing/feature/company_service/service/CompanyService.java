@@ -25,7 +25,27 @@ public class CompanyService {
         return this.companyRepository.findById(companyId).orElse(null);
     }
 
-    public CompanyProfile updateCompanyProfile(CompanyProfile companyProfile) {
+    public CompanyProfile updateStatusCompanyProfile(CompanyProfile companyProfile) {
         return this.companyRepository.save(companyProfile);
+    }
+
+    public CompanyProfile handleUpdateCompany(CompanyProfile companyProfile) {
+        CompanyProfile getCompanyProfile = fetchCompanyById(companyProfile.getId());
+        if (getCompanyProfile != null) {
+            getCompanyProfile.setCompanyName(companyProfile.getCompanyName());
+            getCompanyProfile.setCompanyPhoneNumber(companyProfile.getCompanyPhoneNumber());
+            getCompanyProfile.setBanner(companyProfile.getBanner());
+            getCompanyProfile.setCompanyAddress(companyProfile.getCompanyAddress());
+            getCompanyProfile.setCompanyEmail(companyProfile.getCompanyEmail());
+            getCompanyProfile.setCompanyWebsite(companyProfile.getCompanyWebsite());
+            getCompanyProfile.setCompanyAddressMST(companyProfile.getCompanyAddressMST());
+            getCompanyProfile.setCompanyDateMST(companyProfile.getCompanyDateMST());
+
+        }
+        return this.companyRepository.save(getCompanyProfile);
+    }
+
+    public void handleDelete(long id){
+        this.companyRepository.deleteById(id);
     }
 }
