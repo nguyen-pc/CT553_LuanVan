@@ -7,10 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
-import com.vn.beta_testing.auth_service.service.UserService;
 import com.vn.beta_testing.domain.Permission;
 import com.vn.beta_testing.domain.Role;
 import com.vn.beta_testing.domain.User;
+import com.vn.beta_testing.feature.auth_service.service.UserService;
 import com.vn.beta_testing.util.SecurityUtil;
 import com.vn.beta_testing.util.error.PermissionException;
 

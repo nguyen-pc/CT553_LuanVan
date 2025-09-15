@@ -18,11 +18,11 @@ public class ResCreateUserDTO {
     private String address;
     private int age;
     private Instant createdAt;
-    private Clinic clinic;
+    private CompanyProfile companyProfile;
 
     @Setter
     @Getter
-    public static class Clinic {
+    public static class CompanyProfile {
         private long id;
         private String name;
     }

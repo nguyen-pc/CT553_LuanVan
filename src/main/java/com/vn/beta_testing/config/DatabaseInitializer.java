@@ -6,12 +6,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.vn.beta_testing.auth_service.repository.PermissionRepository;
-import com.vn.beta_testing.auth_service.repository.RoleRepository;
-import com.vn.beta_testing.auth_service.repository.UserRepository;
 import com.vn.beta_testing.domain.Permission;
 import com.vn.beta_testing.domain.Role;
 import com.vn.beta_testing.domain.User;
+import com.vn.beta_testing.feature.auth_service.repository.PermissionRepository;
+import com.vn.beta_testing.feature.auth_service.repository.RoleRepository;
+import com.vn.beta_testing.feature.auth_service.repository.UserRepository;
 import com.vn.beta_testing.util.constant.GenderEnum;
 
 @Service

@@ -1,11 +1,13 @@
 package com.vn.beta_testing.domain;
 
+import java.sql.Date;
 import java.time.Instant;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.vn.beta_testing.util.SecurityUtil;
+import com.vn.beta_testing.util.constant.ClinicStateEnum;
 import com.vn.beta_testing.util.constant.GenderEnum;
 
 import jakarta.persistence.CollectionTable;
@@ -30,49 +32,39 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-// import com.example.FindJobIT.util.SecurityUtil;
-// import com.example.FindJobIT.util.constant.GenderEnum;
-
 @Entity
-@Table(name = "users")
+@Table(name = "company_profiles")
 @Getter
 @Setter
-public class User {
+public class CompanyProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String name;
+    private String companyName;
 
     @NotBlank(message = "email không được để trống")
-    private String email;
+    private String companyEmail;
 
-    @NotBlank(message = "password không được để trống")
-    private String password;
-    private int age;
+    private String companyAddress;
 
-    @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
+    private String companyPhoneNumber;
 
-    private String address;
-    private String phoneNumber;
-    private String imageUrl;
+    private String companyWebsite;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private CompanyProfile companyProfile;
+    private String companyMST;
+    private String companyAddressMST;
+    private Date companyDateMST;
 
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String refreshToken;
+    private String description;
+    private String logo;
+    private String banner;
+    private boolean active;
 
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
     private String updatedBy;
-
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
 
     @PrePersist
     public void handleBeforeCreate() {
@@ -91,5 +83,4 @@ public class User {
 
         this.updatedAt = Instant.now();
     }
-
 }

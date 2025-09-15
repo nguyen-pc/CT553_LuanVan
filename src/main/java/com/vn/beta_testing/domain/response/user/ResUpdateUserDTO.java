@@ -16,11 +16,11 @@ public class ResUpdateUserDTO {
     private String address;
     private int age;
     private Instant updatedAt;
-    private Clinic clinic;
+    private CompanyProfile companyProfile;
 
     @Setter
     @Getter
-    public static class Clinic {
+    public static class CompanyProfile {
         private long id;
         private String name;
 

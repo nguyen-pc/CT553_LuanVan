@@ -23,7 +23,7 @@ public class ResUserDTO {
     private Instant updatedAt;
     private Instant createdAt;
 
-    private Clinic clinic;
+    private CompanyProfile companyProfile;
 
     private RoleUser role;
 
@@ -33,7 +33,7 @@ public class ResUserDTO {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Clinic {
+    public static class CompanyProfile {
         private long id;
         private String name;
     }

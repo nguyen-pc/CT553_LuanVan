@@ -1,11 +1,13 @@
 package com.vn.beta_testing.domain;
 
+import java.sql.Date;
 import java.time.Instant;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.vn.beta_testing.util.SecurityUtil;
+import com.vn.beta_testing.util.constant.ClinicStateEnum;
 import com.vn.beta_testing.util.constant.GenderEnum;
 
 import jakarta.persistence.CollectionTable;
@@ -19,10 +21,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -30,49 +29,33 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-// import com.example.FindJobIT.util.SecurityUtil;
-// import com.example.FindJobIT.util.constant.GenderEnum;
-
 @Entity
-@Table(name = "users")
+@Table(name = "projects")
 @Getter
 @Setter
-public class User {
+public class Campaign {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String name;
+    private String title;
+    private String description;
+    private String Instructions;
+    private Instant startDate;
+    private Instant endDate;
+    private boolean status; // Enum
+    private String RewardType;
+    private String RewardValue; 
 
-    @NotBlank(message = "email không được để trống")
-    private String email;
+     @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
 
-    @NotBlank(message = "password không được để trống")
-    private String password;
-    private int age;
-
-    @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
-
-    private String address;
-    private String phoneNumber;
-    private String imageUrl;
-
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private CompanyProfile companyProfile;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String refreshToken;
 
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
     private String updatedBy;
-
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
 
     @PrePersist
     public void handleBeforeCreate() {
@@ -91,5 +74,4 @@ public class User {
 
         this.updatedAt = Instant.now();
     }
-
 }
