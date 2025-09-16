@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.vn.beta_testing.util.SecurityUtil;
 import com.vn.beta_testing.util.constant.ClinicStateEnum;
 import com.vn.beta_testing.util.constant.GenderEnum;
+import com.vn.beta_testing.util.constant.PriorityEnum;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -29,30 +30,20 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "campaigns")
+@Table(name = "testcases")
 @Getter
 @Setter
-public class Campaign {
+public class TestCase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String title;
     private String description;
-    private String Instructions;
-    private Instant startDate;
-    private Instant endDate;
-    private boolean status; // Enum
-    private String RewardType;
-    private String RewardValue; 
-
-    @ManyToOne
-    @JoinColumn(name = "project_id")
-    private Project project;
-
-    @ManyToOne
-    @JoinColumn(name = "campaignType_id")
-    private CampaignType campaignType;
+    private String preCondition;
+    private String steps;
+    private String expectedResult;
+    private PriorityEnum priority;
 
     private Instant createdAt;
     private Instant updatedAt;
