@@ -12,5 +12,5 @@ import com.vn.beta_testing.domain.Survey;
 
 @Repository
 public interface SurveyRepository extends JpaRepository<Survey, Long>, JpaSpecificationExecutor<Survey> {
-    List<Survey> findByCampaign_CampaignId(long campaignId);
+    List<Survey> findByCampaign_Id(long campaignId);
 }

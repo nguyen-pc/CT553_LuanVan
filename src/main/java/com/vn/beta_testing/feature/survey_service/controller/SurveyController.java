@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.vn.beta_testing.domain.Campaign;
 import com.vn.beta_testing.domain.Project;
@@ -24,7 +26,8 @@ import com.vn.beta_testing.util.error.IdInvalidException;
 
 import jakarta.validation.Valid;
 
-@Controller
+@RestController
+@RequestMapping("/api/v1")
 public class SurveyController {
     private final SurveyService surveyService;
     private final CampaignService campaignService;

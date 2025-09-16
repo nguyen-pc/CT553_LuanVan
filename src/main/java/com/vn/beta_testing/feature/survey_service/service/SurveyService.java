@@ -56,6 +56,6 @@ public class SurveyService {
         if (campaign == null) {
             return null;
         }
-        return surveyRepository.findByCampaign_CampaignId(campaign.getId());
+        return surveyRepository.findByCampaign_Id(campaign.getId());
     }
 }
