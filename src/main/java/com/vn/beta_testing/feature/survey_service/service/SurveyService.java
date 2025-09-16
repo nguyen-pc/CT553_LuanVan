@@ -7,9 +7,10 @@ import java.util.Optional;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
+import com.vn.beta_testing.domain.Campaign;
 import com.vn.beta_testing.domain.Project;
 import com.vn.beta_testing.domain.Survey;
-import com.vn.beta_testing.feature.company_service.service.ProjectService;
+import com.vn.beta_testing.feature.company_service.service.CampaignService;
 import com.vn.beta_testing.feature.survey_service.repository.SurveyRepository;
 
 
@@ -17,11 +18,11 @@ import com.vn.beta_testing.feature.survey_service.repository.SurveyRepository;
 @Service
 public class SurveyService {
     private final SurveyRepository surveyRepository;
-    private final ProjectService projectService;
+    private final CampaignService campaignService;
 
-    public SurveyService(SurveyRepository surveyRepository, ProjectService projectService) {
-        this.projectService = projectService;
+    public SurveyService(SurveyRepository surveyRepository, CampaignService campaignService) {
         this.surveyRepository = surveyRepository;
+        this.campaignService = campaignService;
     }
 
     public Survey createSurvey(Survey survey) {
@@ -50,11 +51,11 @@ public class SurveyService {
         surveyRepository.deleteById(surveyId);
     }
 
-    // public List<Survey> getSurveysByProjectId(long projectId) {
-    //     Project project = projectService.getProjectById(projectId).orElse(null);
-    //     if (project == null) {
-    //         return null;
-    //     }
-    //     return surveyRepository.findByProject_ProjectId(project.getProjectId());
-    // }
+    public List<Survey> getSurveysByCampaignId(long campaignId) {
+        Campaign campaign = campaignService.fetchCampaignById(campaignId);
+        if (campaign == null) {
+            return null;
+        }
+        return surveyRepository.findByCampaign_CampaignId(campaign.getId());
+    }
 }

@@ -6,11 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import com.vn.beta_testing.domain.Survey;
-
+import com.vn.beta_testing.domain.Choice;
 
 
 @Repository
-public interface SurveyRepository extends JpaRepository<Survey, Long>, JpaSpecificationExecutor<Survey> {
-    List<Survey> findByCampaign_CampaignId(long campaignId);
+public interface ChoiceRepository extends JpaRepository<Choice, Long>, JpaSpecificationExecutor<Choice> {
+
 }
