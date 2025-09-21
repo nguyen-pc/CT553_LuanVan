@@ -51,8 +51,8 @@ public class UserService {
         User currentUser = this.fetchUserById(reqUser.getId());
         if (currentUser != null) {
             currentUser.setAddress(reqUser.getAddress());
-            currentUser.setGender(reqUser.getGender());
-            currentUser.setAge(reqUser.getAge());
+            // currentUser.setGender(reqUser.getGender());
+            // currentUser.setAge(reqUser.getAge());
             currentUser.setName(reqUser.getName());
             currentUser.setPhoneNumber(reqUser.getPhoneNumber());
         }
@@ -126,9 +126,9 @@ public class UserService {
         res.setId(user.getId());
         res.setEmail(user.getEmail());
         res.setName(user.getName());
-        res.setAge(user.getAge());
+        // res.setAge(user.getAge());
         res.setCreatedAt(user.getCreatedAt());
-        res.setGender(user.getGender());
+        // res.setGender(user.getGender());
         res.setAddress(user.getAddress());
 
         if (user.getCompanyProfile() != null) {
@@ -161,9 +161,9 @@ public class UserService {
         res.setEmail(user.getEmail());
         res.setName(user.getName());
         res.setAddress(user.getAddress());
-        res.setAge(user.getAge());
+        // res.setAge(user.getAge());
         res.setCreatedAt(user.getCreatedAt());
-        res.setGender(user.getGender());
+        // res.setGender(user.getGender());
         res.setUpdatedAt(user.getUpdatedAt());
         return res;
     }
@@ -179,9 +179,9 @@ public class UserService {
         }
         res.setId(user.getId());
         res.setName(user.getName());
-        res.setAge(user.getAge());
+        // res.setAge(user.getAge());
         res.setUpdatedAt(user.getUpdatedAt());
-        res.setGender(user.getGender());
+        // res.setGender(user.getGender());
         res.setAddress(user.getAddress());
 
         return res;

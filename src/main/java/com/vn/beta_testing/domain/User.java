@@ -49,11 +49,7 @@ public class User {
 
     @NotBlank(message = "password không được để trống")
     private String password;
-    private int age;
-
-    @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
-
+ 
     private String address;
     private String phoneNumber;
     private String imageUrl;
