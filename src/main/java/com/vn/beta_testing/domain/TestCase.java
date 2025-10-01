@@ -45,6 +45,10 @@ public class TestCase {
     private String expectedResult;
     private PriorityEnum priority;
 
+    @ManyToOne
+    @JoinColumn(name = "testScenario_id")
+    private TestScenario testScenario;
+
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;

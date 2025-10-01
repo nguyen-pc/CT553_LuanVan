@@ -6,10 +6,12 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vn.beta_testing.util.SecurityUtil;
 import com.vn.beta_testing.util.constant.ClinicStateEnum;
 import com.vn.beta_testing.util.constant.GenderEnum;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -60,6 +62,10 @@ public class CompanyProfile {
     private String logo;
     private String banner;
     private boolean active;
+
+    @OneToMany(mappedBy = "companyProfile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Project> projects;
 
     private Instant createdAt;
     private Instant updatedAt;

@@ -3,12 +3,15 @@ package com.vn.beta_testing.domain;
 import java.time.Instant;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vn.beta_testing.util.SecurityUtil;
 import com.vn.beta_testing.util.constant.ClinicStateEnum;
 import com.vn.beta_testing.util.constant.GenderEnum;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -21,6 +24,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -44,15 +48,20 @@ public class Campaign {
     private Instant endDate;
     private boolean status; // Enum
     private String RewardType;
-    private String RewardValue; 
+    private String RewardValue;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "project_id")
     private Project project;
 
     @ManyToOne
     @JoinColumn(name = "campaignType_id")
     private CampaignType campaignType;
+
+    @OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<UseCase> useCases;
 
     private Instant createdAt;
     private Instant updatedAt;

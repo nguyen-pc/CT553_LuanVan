@@ -3,13 +3,16 @@ package com.vn.beta_testing.domain;
 import java.time.Instant;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vn.beta_testing.util.SecurityUtil;
 import com.vn.beta_testing.util.constant.ClinicStateEnum;
 import com.vn.beta_testing.util.constant.GenderEnum;
 import com.vn.beta_testing.util.constant.PriorityEnum;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -22,6 +25,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -40,6 +44,15 @@ public class UseCase {
 
     private String name;
     private String description;
+
+    @OneToMany(mappedBy = "useCase", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<TestScenario> testScenarios;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "campaign_id")
+    private Campaign campaign;
 
     private Instant createdAt;
     private Instant updatedAt;

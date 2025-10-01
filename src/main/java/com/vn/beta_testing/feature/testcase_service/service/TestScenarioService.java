@@ -3,17 +3,24 @@ package com.vn.beta_testing.feature.testcase_service.service;
 import org.springframework.stereotype.Service;
 
 import com.vn.beta_testing.domain.TestScenario;
+import com.vn.beta_testing.domain.UseCase;
 import com.vn.beta_testing.feature.testcase_service.repository.TestScenarioRepository;
 
 @Service
 public class TestScenarioService {
     private final TestScenarioRepository testScenarioRepository;
+    private final UseCaseService useCaseService;
 
-    public TestScenarioService(TestScenarioRepository testScenarioRepository) {
+    public TestScenarioService(TestScenarioRepository testScenarioRepository, UseCaseService useCaseService) {
         this.testScenarioRepository = testScenarioRepository;
+        this.useCaseService = useCaseService;
     }
 
     public TestScenario createTestScenario(TestScenario testScenario) {
+        if(testScenario.getUseCase() != null){
+            UseCase useCase = this.useCaseService.fetchUseCaseById(testScenario.getUseCase().getId());
+            testScenario.setUseCase(useCase != null ? useCase : null);
+        }
         return testScenarioRepository.save(testScenario);
     }
 
@@ -25,6 +32,10 @@ public class TestScenarioService {
         TestScenario existingTestScenario = this.testScenarioRepository.findById(testScenario.getId()).orElse(null);
         if (existingTestScenario == null) {
             throw new IllegalArgumentException("TestScenario with id = " + testScenario.getId() + " does not exist.");
+        }
+        if(testScenario.getUseCase() != null){
+            UseCase useCase = this.useCaseService.fetchUseCaseById(testScenario.getUseCase().getId());
+            existingTestScenario.setUseCase(useCase != null ? useCase : null);
         }
         existingTestScenario.setTitle(testScenario.getTitle());
         existingTestScenario.setDescription(testScenario.getDescription());

@@ -45,7 +45,8 @@ public class CampaignController {
     @PutMapping("/campaign/update/{id}")
     @ApiMessage("Update campaign")
     public ResponseEntity<Campaign> updateCampaign(@PathVariable("id") Long id, @RequestBody Campaign campaign) {
-        Campaign existingCampaign = this.campaignService.fetchCampaignById(id);
+        long idCampaign = campaign.getId();
+        Campaign existingCampaign = this.campaignService.fetchCampaignById(idCampaign);
         if (existingCampaign == null) {
             throw new IdInvalidException("Campaign with id = " + id + " does not exist.");
         }
