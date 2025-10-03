@@ -1,9 +1,14 @@
 package com.vn.beta_testing.feature.company_service.service;
 
+import org.springframework.boot.autoconfigure.batch.BatchProperties.Job;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.vn.beta_testing.domain.CompanyProfile;
 import com.vn.beta_testing.domain.Project;
+import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.company_service.repository.ProjectRepository;
 import com.vn.beta_testing.util.error.IdInvalidException;
 
@@ -20,6 +25,26 @@ public class ProjectService {
     public Project fetchProjectById(Long id) {
         return this.projectRepository.findById(id).orElse(null);
     }
+
+     public ResultPaginationDTO fetchAll(Specification<Project> spec, Pageable pageable) {
+        Page<Project> pageUser = this.projectRepository.findAll(spec, pageable);
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+
+        mt.setPages(pageUser.getTotalPages());
+        mt.setTotal(pageUser.getTotalElements());
+
+        rs.setMeta(mt);
+
+        rs.setResult(pageUser.getContent());
+
+        return rs;
+    }
+
 
     public Project createProject(Project project) {
         

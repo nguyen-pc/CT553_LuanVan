@@ -1,5 +1,9 @@
 package com.vn.beta_testing.feature.company_service.controller;
 
+
+import org.springframework.boot.autoconfigure.batch.BatchProperties.Job;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.turkraft.springfilter.boot.Filter;
 import com.vn.beta_testing.domain.Project;
+import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.company_service.service.ProjectService;
 import com.vn.beta_testing.util.annotation.ApiMessage;
 import com.vn.beta_testing.util.error.IdInvalidException;
@@ -23,6 +29,29 @@ public class ProjectController {
 
     public ProjectController(ProjectService projectService) {
         this.projectService = projectService;
+    }
+
+    @GetMapping("/projects")
+    @ApiMessage("Get project with pagination")
+    public ResponseEntity<ResultPaginationDTO> getAllProject(
+            @Filter Specification<Project> spec,
+            Pageable pageable) {
+
+        return ResponseEntity.ok().body(this.projectService.fetchAll(spec, pageable));
+    }
+
+    @GetMapping("/projects/all/{companyId}")
+    @ApiMessage("Get project with pagination")
+    public ResponseEntity<ResultPaginationDTO> getAllProjectByCompany(
+            @PathVariable("companyId") long companyId,
+            @Filter Specification<Project> spec,
+            Pageable pageable) {
+        // Tạo specification lọc theo companyId
+        Specification<Project> companySpec = (root, query, builder) -> builder.equal(root.get("companyProfile").get("id"),
+                companyId);
+
+        Specification<Project> finalSpec = Specification.where(companySpec).and(spec);
+        return ResponseEntity.ok().body(this.projectService.fetchAll(finalSpec, pageable));
     }
 
     @GetMapping("/projects/{id}")

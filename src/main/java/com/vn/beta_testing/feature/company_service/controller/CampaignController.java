@@ -1,5 +1,7 @@
 package com.vn.beta_testing.feature.company_service.controller;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.turkraft.springfilter.boot.Filter;
 import com.vn.beta_testing.domain.Campaign;
+import com.vn.beta_testing.domain.Project;
+import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.company_service.service.CampaignService;
 import com.vn.beta_testing.util.annotation.ApiMessage;
 import com.vn.beta_testing.util.error.IdInvalidException;
@@ -23,6 +28,20 @@ public class CampaignController {
 
     public CampaignController(CampaignService campaignService) {
         this.campaignService = campaignService;
+    }
+
+    @GetMapping("/project/{projectId}/campaigns")
+    @ApiMessage("Get all campaigns")
+   public ResponseEntity<ResultPaginationDTO> getAllCampaignsByProject(
+            @PathVariable("projectId") long projectId,
+            @Filter Specification<Campaign> spec,
+            Pageable pageable) {
+        // Tạo specification lọc theo projectId
+        Specification<Campaign> projectSpec = (root, query, builder) -> builder.equal(root.get("project").get("id"),
+                projectId);
+
+        Specification<Campaign> finalSpec = Specification.where(projectSpec).and(spec);
+        return ResponseEntity.ok().body(this.campaignService.fetchAll(finalSpec, pageable));
     }
 
     @GetMapping("/campaign/{id}")

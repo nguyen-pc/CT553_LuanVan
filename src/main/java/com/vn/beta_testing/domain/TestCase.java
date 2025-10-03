@@ -3,6 +3,7 @@ package com.vn.beta_testing.domain;
 import java.time.Instant;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.vn.beta_testing.util.SecurityUtil;
@@ -47,6 +48,7 @@ public class TestCase {
 
     @ManyToOne
     @JoinColumn(name = "testScenario_id")
+    @JsonBackReference()
     private TestScenario testScenario;
 
     private Instant createdAt;

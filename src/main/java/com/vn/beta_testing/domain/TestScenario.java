@@ -53,6 +53,7 @@ public class TestScenario {
     @OneToMany(mappedBy = "testScenario", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<TestCase> testCases;
+
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
