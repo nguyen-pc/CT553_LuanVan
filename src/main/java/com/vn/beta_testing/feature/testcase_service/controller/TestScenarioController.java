@@ -1,6 +1,7 @@
 package com.vn.beta_testing.feature.testcase_service.controller;
 
-
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.turkraft.springfilter.boot.Filter;
 import com.vn.beta_testing.domain.TestScenario;
+import com.vn.beta_testing.domain.UseCase;
+import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.testcase_service.service.TestScenarioService;
 import com.vn.beta_testing.util.annotation.ApiMessage;
 import com.vn.beta_testing.util.error.IdInvalidException;
@@ -26,18 +30,29 @@ public class TestScenarioController {
         this.testScenarioService = testScenarioService;
     }
 
-    
+    @ApiMessage("Get scenario by usecase id")
+    @GetMapping("/usecase/{usecaseId}/test_scenario")
+    public ResponseEntity<ResultPaginationDTO> getTestScenarioByUseCase(@PathVariable("usecaseId") Long usecaseId,
+            @Filter Specification<TestScenario> spec,
+            Pageable pageable) {
+        Specification<TestScenario> scenarioSpec = (root, query, builder) -> builder.equal(
+                root.get("useCase").get("id"),
+                usecaseId);
+        Specification<TestScenario> finalSpec = Specification.where(scenarioSpec).and(spec);
+        return ResponseEntity.ok().body(this.testScenarioService.fetchAll(finalSpec, pageable));
+    }
 
-    @PostMapping("/testscenario/create")
+    @PostMapping("/usecase/test_scenario/create")
     @ApiMessage("Create a new test scenario")
     public ResponseEntity<TestScenario> createTestScenario(@RequestBody TestScenario testScenario) {
         TestScenario createdTestScenario = testScenarioService.createTestScenario(testScenario);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTestScenario);
     }
 
-    @PutMapping("/testscenario/update/{id}")
+    @PutMapping("/usecase/test_scenario/update/{id}")
     @ApiMessage("Update test scenario")
-    public ResponseEntity<TestScenario> updateTestScenario(@PathVariable("id") Long id, @RequestBody TestScenario testScenario) {
+    public ResponseEntity<TestScenario> updateTestScenario(@PathVariable("id") Long id,
+            @RequestBody TestScenario testScenario) {
         TestScenario existingTestScenario = this.testScenarioService.fetchTestScenarioById(id);
         if (existingTestScenario == null) {
             throw new IdInvalidException("Test scenario with id = " + id + " does not exist.");
@@ -46,7 +61,7 @@ public class TestScenarioController {
         return ResponseEntity.ok(updatedTestScenario);
     }
 
-    @GetMapping("/testscenario/{id}")
+    @GetMapping("/usecase/test_scenario/{id}")
     @ApiMessage("Get test scenario by id")
     public ResponseEntity<TestScenario> getTestScenarioById(@PathVariable("id") Long id) {
         TestScenario testScenario = testScenarioService.fetchTestScenarioById(id);
@@ -56,8 +71,8 @@ public class TestScenarioController {
         return ResponseEntity.ok(testScenario);
     }
 
-    @DeleteMapping("/testscenario/delete/{id}")
-    @ApiMessage("Delete test scenario") 
+    @DeleteMapping("/usecase/test_scenario/delete/{id}")
+    @ApiMessage("Delete test scenario")
     public ResponseEntity<Void> deleteTestScenario(@PathVariable("id") Long id) {
         TestScenario existingTestScenario = this.testScenarioService.fetchTestScenarioById(id);
         if (existingTestScenario == null) {

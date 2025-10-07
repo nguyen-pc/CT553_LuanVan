@@ -1,5 +1,7 @@
 package com.vn.beta_testing.feature.testcase_service.controller;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.turkraft.springfilter.boot.Filter;
+import com.vn.beta_testing.domain.Project;
 import com.vn.beta_testing.domain.UseCase;
+import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.testcase_service.service.UseCaseService;
 import com.vn.beta_testing.util.annotation.ApiMessage;
 import com.vn.beta_testing.util.error.IdInvalidException;
@@ -19,9 +24,21 @@ import com.vn.beta_testing.util.error.IdInvalidException;
 @RestController
 @RequestMapping("/api/v1")
 public class UseCaseController {
-    private final UseCaseService useCaseService;  
+    private final UseCaseService useCaseService;
+
     public UseCaseController(UseCaseService useCaseService) {
         this.useCaseService = useCaseService;
+    }
+
+    @ApiMessage("Get usecase by campaign id")
+    @GetMapping("/usecase/campaign/{campaignId}")
+    public  ResponseEntity<ResultPaginationDTO> getUseCasesByCampaignId(@PathVariable("campaignId") Long campaignId,
+            @Filter Specification<UseCase> spec,
+            Pageable pageable) {
+        Specification<UseCase> usecaseSpec = (root, query, builder) -> builder.equal(root.get("campaign").get("id"),
+                campaignId);
+        Specification<UseCase> finalSpec = Specification.where(usecaseSpec).and(spec);
+        return ResponseEntity.ok().body(this.useCaseService.fetchAll(finalSpec, pageable));
     }
 
     @GetMapping("/usecase/{id}")
@@ -51,6 +68,7 @@ public class UseCaseController {
         UseCase updatedUseCase = this.useCaseService.updateUseCase(useCase);
         return ResponseEntity.ok(updatedUseCase);
     }
+
     @DeleteMapping("/usecase/delete/{id}")
     @ApiMessage("Delete use case")
     public ResponseEntity<Void> deleteUseCase(@PathVariable("id") Long id) {
@@ -62,5 +80,5 @@ public class UseCaseController {
         this.useCaseService.deleteUseCase(id);
         return ResponseEntity.noContent().build();
     }
-    
+
 }

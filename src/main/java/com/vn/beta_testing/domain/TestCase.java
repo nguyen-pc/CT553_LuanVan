@@ -42,9 +42,10 @@ public class TestCase {
     private String title;
     private String description;
     private String preCondition;
+    private String dataTest;
     private String steps;
     private String expectedResult;
-    private PriorityEnum priority;
+    private String priority;
 
     @ManyToOne
     @JoinColumn(name = "testScenario_id")

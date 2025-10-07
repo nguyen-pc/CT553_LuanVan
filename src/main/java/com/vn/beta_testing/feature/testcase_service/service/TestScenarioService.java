@@ -1,9 +1,13 @@
 package com.vn.beta_testing.feature.testcase_service.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.vn.beta_testing.domain.TestScenario;
 import com.vn.beta_testing.domain.UseCase;
+import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.testcase_service.repository.TestScenarioRepository;
 
 @Service
@@ -14,6 +18,25 @@ public class TestScenarioService {
     public TestScenarioService(TestScenarioRepository testScenarioRepository, UseCaseService useCaseService) {
         this.testScenarioRepository = testScenarioRepository;
         this.useCaseService = useCaseService;
+    }
+
+     public ResultPaginationDTO fetchAll(Specification<TestScenario> spec, Pageable pageable) {
+        Page<TestScenario> pageUser = this.testScenarioRepository.findAll(spec, pageable);
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+
+        mt.setPages(pageUser.getTotalPages());
+        mt.setTotal(pageUser.getTotalElements());
+
+        rs.setMeta(mt);
+
+        rs.setResult(pageUser.getContent());
+
+        return rs;
     }
 
     public TestScenario createTestScenario(TestScenario testScenario) {
@@ -39,6 +62,7 @@ public class TestScenarioService {
         }
         existingTestScenario.setTitle(testScenario.getTitle());
         existingTestScenario.setDescription(testScenario.getDescription());
+        existingTestScenario.setPrecondition(testScenario.getPrecondition());
         return this.testScenarioRepository.save(existingTestScenario);
     }
     public void deleteTestScenario(Long id) {

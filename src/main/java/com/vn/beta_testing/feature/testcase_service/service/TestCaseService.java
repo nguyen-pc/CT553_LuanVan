@@ -1,9 +1,13 @@
 package com.vn.beta_testing.feature.testcase_service.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.vn.beta_testing.domain.TestCase;
 import com.vn.beta_testing.domain.TestScenario;
+import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.testcase_service.repository.TestCaseRepository;
 
 @Service
@@ -14,6 +18,25 @@ public class TestCaseService {
     public TestCaseService(TestCaseRepository testCaseRepository, TestScenarioService testScenarioService) {
         this.testCaseRepository = testCaseRepository;
         this.testScenarioService = testScenarioService;
+    }
+
+     public ResultPaginationDTO fetchAll(Specification<TestCase> spec, Pageable pageable) {
+        Page<TestCase> pageUser = this.testCaseRepository.findAll(spec, pageable);
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+
+        mt.setPages(pageUser.getTotalPages());
+        mt.setTotal(pageUser.getTotalElements());
+
+        rs.setMeta(mt);
+
+        rs.setResult(pageUser.getContent());
+
+        return rs;
     }
 
     public TestCase createTestCase(TestCase testCase) {

@@ -46,6 +46,8 @@ public class Campaign {
     private String Instructions;
     private Instant startDate;
     private Instant endDate;
+    private Boolean isPublic;
+    private String estimatedTime; 
     private String status; // Enum
     private String RewardType;
     private String RewardValue;

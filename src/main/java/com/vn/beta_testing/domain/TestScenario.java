@@ -44,6 +44,7 @@ public class TestScenario {
 
     private String title;
     private String description;
+    private String precondition;
 
     @ManyToOne
     @JsonBackReference
