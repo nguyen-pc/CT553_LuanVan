@@ -54,7 +54,6 @@ public class CampaignService {
             campaign.setProject(project != null ? project : null);
         }
         if(campaign.getCampaignType() != null){
-            // Assuming you have a CampaignTypeService to fetch CampaignType by ID
             CampaignType campaignType = this.campaignTypeService.fetchCampaignTypeById(campaign.getCampaignType().getId());
             campaign.setCampaignType(campaignType != null ? campaignType : null);
         }

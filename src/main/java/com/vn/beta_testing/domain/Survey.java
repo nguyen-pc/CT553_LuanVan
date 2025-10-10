@@ -34,8 +34,10 @@ public class Survey {
 
     @NotBlank(message = "Survey name is required")
     private String surveyName;
-
+    private String subTitle;
     private String description;
+    private Instant startDate;
+    private Instant endDate;
     private Instant createdAt;
     private Instant updatedAt;
 
