@@ -1,24 +1,37 @@
 package com.vn.beta_testing.feature.register_campaign.service;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.vn.beta_testing.domain.TesterCampaign;
 import com.vn.beta_testing.domain.User;
+import com.vn.beta_testing.domain.UserProfile;
 import com.vn.beta_testing.domain.Campaign;
 import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.auth_service.service.UserService;
+import com.vn.beta_testing.feature.company_service.mapDTO.CampaignMapper;
 import com.vn.beta_testing.feature.company_service.service.CampaignService;
+import com.vn.beta_testing.feature.register_campaign.DTO.response.GetTesterCampaignDTO;
 import com.vn.beta_testing.feature.register_campaign.DTO.response.TesterCampaignDTO;
 import com.vn.beta_testing.feature.register_campaign.DTO.response.TesterCampaignStatsDTO;
+import com.vn.beta_testing.feature.register_campaign.DTO.response.UserTesterProfileDTO;
 import com.vn.beta_testing.feature.register_campaign.repository.TesterCampaignRepository;
 import com.vn.beta_testing.util.constant.TesterCampaignStatus;
 import com.vn.beta_testing.util.error.IdInvalidException;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class TesterCampaignService {
@@ -34,6 +47,98 @@ public class TesterCampaignService {
         this.testerCampaignRepository = testerCampaignRepository;
         this.campaignService = campaignService;
         this.userService = userService;
+    }
+
+    @Transactional(readOnly = true)
+    public ResultPaginationDTO fetchByCampaignWithSpec(Long campaignId, Specification<TesterCampaign> spec,
+            Pageable pageable) {
+
+        // filter thêm campaignId vào spec
+        Specification<TesterCampaign> campaignSpec = (root, query, cb) -> cb.equal(root.get("campaign").get("id"),
+                campaignId);
+
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest();
+        String statusParam = request.getParameter("status");
+
+        if (statusParam != null && !statusParam.isEmpty()) {
+            try {
+                // ✅ Chuyển String -> Enum đúng kiểu
+                TesterCampaignStatus enumStatus = TesterCampaignStatus.valueOf(statusParam.toUpperCase());
+                Specification<TesterCampaign> statusSpec = (root, query, cb) -> cb.equal(root.get("status"),
+                        enumStatus);
+
+                campaignSpec = campaignSpec.and(statusSpec);
+            } catch (IllegalArgumentException e) {
+                // Nếu param không khớp Enum, có thể log hoặc bỏ qua
+                System.out.println("⚠️ Invalid status value: " + statusParam);
+            }
+        }
+
+        Specification<TesterCampaign> combinedSpec = spec == null ? campaignSpec : spec.and(campaignSpec);
+
+        // JOIN FETCH để lấy luôn user và userProfile trong 1 query
+        queryFetchUserAndProfile(combinedSpec);
+
+        Page<TesterCampaign> page = testerCampaignRepository.findAll(combinedSpec, pageable);
+
+        List<GetTesterCampaignDTO> dtos = page.getContent().stream().map(this::toTesterCampaignDTO).toList();
+
+        // gói vào ResultPaginationDTO
+        ResultPaginationDTO result = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
+        meta.setPage(pageable.getPageNumber() + 1);
+        meta.setPageSize(pageable.getPageSize());
+        meta.setPages(page.getTotalPages());
+        meta.setTotal(page.getTotalElements());
+        result.setMeta(meta);
+        result.setResult(dtos);
+
+        return result;
+    }
+
+    private void queryFetchUserAndProfile(Specification<TesterCampaign> spec) {
+        // có thể tùy chỉnh thêm trong repository nếu cần query tùy chỉnh
+    }
+
+    private GetTesterCampaignDTO toTesterCampaignDTO(TesterCampaign tc) {
+        GetTesterCampaignDTO dto = new GetTesterCampaignDTO();
+        dto.setId(tc.getId());
+        dto.setStatus(tc.getStatus() != null ? tc.getStatus().name() : null);
+        dto.setJoinDate(tc.getJoinDate());
+
+        User user = tc.getUser();
+        if (user != null && user.getId() != 0) {
+            UserTesterProfileDTO profileDTO = new UserTesterProfileDTO();
+            profileDTO.setUserId(user.getId());
+            profileDTO.setName(user.getName());
+
+            UserProfile profile = user.getUserProfile(); // nếu có mappedBy bên User
+            if (profile != null) {
+                profileDTO.setGender(profile.getGender() != null ? profile.getGender().name() : null);
+                profileDTO.setLocation(profile.getZipcode() + " - " + profile.getCountry());
+                profileDTO.setEducation(profile.getEducation());
+                profileDTO.setIncome(profile.getHouseholdIncome());
+                profileDTO.setDevices(getDevices(profile));
+
+            }
+
+            dto.setUser(profileDTO);
+        }
+        return dto;
+    }
+
+    private String getDevices(UserProfile p) {
+        List<String> devices = new ArrayList<>();
+        if (p.getComputer() != null && !p.getComputer().isBlank())
+            devices.add("PC");
+        if (p.getSmartPhone() != null && !p.getSmartPhone().isBlank())
+            devices.add("iOS/Android");
+        if (p.getTablet() != null && !p.getTablet().isBlank())
+            devices.add("Tablet");
+        if (p.getOtherDevice() != null && !p.getOtherDevice().isBlank())
+            devices.add("Other");
+        return String.join(", ", devices);
     }
 
     /** Get all testers by filter */
@@ -59,23 +164,22 @@ public class TesterCampaignService {
     }
 
     public TesterCampaignDTO toDTO(TesterCampaign entity) {
-        TesterCampaignDTO dto = new TesterCampaignDTO();
-        dto.setId(entity.getId());
-        dto.setStatus(entity.getStatus());
-        dto.setProgress(entity.getProgress());
-        dto.setRoleInCampaign(entity.getRoleInCampaign());
-        dto.setJoinDate(entity.getJoinDate());
-        dto.setCompletionDate(entity.getCompletionDate());
-        dto.setNote(entity.getNote());
+        if (entity == null)
+            return null;
 
-        if (entity.getUser() != null) {
-            dto.setUserId(entity.getUser().getId());
-        }
-        if (entity.getCampaign() != null) {
-            dto.setCampaignId(entity.getCampaign().getId());
-        }
+        return TesterCampaignDTO.builder()
+                .id(entity.getId())
+                .status(entity.getStatus() != null ? entity.getStatus().name() : null)
+                .progress(entity.getProgress())
+                .note(entity.getNote())
+                .userId(entity.getUser() != null ? entity.getUser().getId() : null)
+                .joinDate(entity.getJoinDate())
+                .campaign(CampaignMapper.toDTO(entity.getCampaign())) // 👈 ánh xạ campaign
+                .build();
+    }
 
-        return dto;
+    public List<TesterCampaign> getCampaignsByUser(Long userId) {
+        return testerCampaignRepository.findByUser_Id(userId);
     }
 
     /** Apply for campaign */
@@ -142,5 +246,24 @@ public class TesterCampaignService {
         dto.setPending(testerCampaignRepository.countByCampaignIdAndStatus(campaignId, TesterCampaignStatus.PENDING));
         dto.setApplied(testerCampaignRepository.countByCampaignId(campaignId));
         return dto;
+    }
+
+    public Map<String, Object> getTesterCampaignStatus(Long userId, Long campaignId) {
+        Optional<TesterCampaign> optional = testerCampaignRepository
+                .findByUserIdAndCampaignId(userId, campaignId);
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (optional.isPresent()) {
+            TesterCampaign testerCampaign = optional.get();
+            response.put("exists", true);
+            response.put("status", testerCampaign.getStatus());
+            response.put("note", testerCampaign.getNote());
+        } else {
+            response.put("exists", false);
+            response.put("status", "NOT_REGISTERED");
+        }
+
+        return response;
     }
 }

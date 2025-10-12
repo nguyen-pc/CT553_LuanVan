@@ -1,25 +1,29 @@
 package com.vn.beta_testing.feature.register_campaign.DTO.response;
 
-
 import java.time.Instant;
 
+import com.vn.beta_testing.feature.company_service.DTO.CampaignDTO;
 import com.vn.beta_testing.util.constant.TesterCampaignStatus;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.Instant;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class TesterCampaignDTO {
-
     private Long id;
-    private TesterCampaignStatus status;
+    private String status;
     private Integer progress;
-    private String roleInCampaign;
-    private Instant joinDate;
-    private Instant completionDate;
     private String note;
-
-    // Chỉ map userId và campaignId
     private Long userId;
-    private Long campaignId;
+    private Instant joinDate;
+    private CampaignDTO campaign; // 👈 Thêm phần này
 }

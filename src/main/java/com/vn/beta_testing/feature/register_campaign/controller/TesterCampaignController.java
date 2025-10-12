@@ -27,21 +27,26 @@ public class TesterCampaignController {
         this.testerCampaignService = testerCampaignService;
     }
 
-    @GetMapping("/tester-campaigns")
-    @ApiMessage("Get all tester campaigns")
-    public ResponseEntity<ResultPaginationDTO> getAll(@Filter Specification<TesterCampaign> spec, Pageable pageable) {
-        return ResponseEntity.ok().body(this.testerCampaignService.fetchAll(spec, pageable));
-    }
-
     @GetMapping("/campaign/{campaignId}/testers")
     @ApiMessage("Get testers by campaign")
-    public ResponseEntity<List<TesterCampaignDTO>> getTestersByCampaign(@PathVariable("campaignId") Long campaignId) {
-        List<TesterCampaign> testers = this.testerCampaignService.getTestersByCampaign(campaignId);
-        List<TesterCampaignDTO> dtos = testers.stream()
-                .map(this.testerCampaignService::toDTO)
-                .toList();
-        return ResponseEntity.ok().body(dtos);
+    public ResponseEntity<ResultPaginationDTO> getTestersByCampaign(
+            @PathVariable("campaignId") Long campaignId,
+            @Filter Specification<TesterCampaign> spec, // filter động
+            Pageable pageable) {
+
+        ResultPaginationDTO result = this.testerCampaignService.fetchByCampaignWithSpec(campaignId, spec, pageable);
+        return ResponseEntity.ok().body(result);
     }
+
+    // @GetMapping("/campaign/{campaignId}/testers")
+    // @ApiMessage("Get testers by campaign")
+    // public ResponseEntity<List<TesterCampaignDTO>> getTestersByCampaign(@PathVariable("campaignId") Long campaignId) {
+    //     List<TesterCampaign> testers = this.testerCampaignService.getTestersByCampaign(campaignId);
+    //     List<TesterCampaignDTO> dtos = testers.stream()
+    //             .map(this.testerCampaignService::toDTO)
+    //             .toList();
+    //     return ResponseEntity.ok().body(dtos);
+    // }
 
     @PostMapping("/campaign/tester-campaign/apply")
     @ApiMessage("Apply for campaign")
@@ -82,5 +87,29 @@ public class TesterCampaignController {
     public ResponseEntity<TesterCampaignStatsDTO> getStatsByCampaign(
             @PathVariable("campaignId") Long campaignId) {
         return ResponseEntity.ok(this.testerCampaignService.getStatsByCampaign(campaignId));
+    }
+
+    @GetMapping("/campaign/{campaignId}/tester-campaign/status")
+    @ApiMessage("Get tester campaign status by user and campaign")
+    public ResponseEntity<Map<String, Object>> getTesterCampaignStatus(
+            @PathVariable("campaignId") Long campaignId,
+            @RequestParam("userId") Long userId) {
+
+        Map<String, Object> result = this.testerCampaignService.getTesterCampaignStatus(userId, campaignId);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/campaign/tester-campaigns/user/{userId}")
+    @ApiMessage("Get all campaigns that a user has joined")
+    public ResponseEntity<List<TesterCampaignDTO>> getCampaignsByUser(
+            @PathVariable("userId") Long userId) {
+
+        List<TesterCampaign> joinedCampaigns = this.testerCampaignService.getCampaignsByUser(userId);
+
+        List<TesterCampaignDTO> dtos = joinedCampaigns.stream()
+                .map(this.testerCampaignService::toDTO)
+                .toList();
+
+        return ResponseEntity.ok().body(dtos);
     }
 }
