@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vn.beta_testing.util.SecurityUtil;
+import com.vn.beta_testing.util.constant.CampaignStatus;
 import com.vn.beta_testing.util.constant.ClinicStateEnum;
 import com.vn.beta_testing.util.constant.GenderEnum;
 
@@ -43,15 +44,23 @@ public class Campaign {
     private long id;
 
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String description;
-    private String Instructions;
+    @Column(columnDefinition = "TEXT")
+    private String note;
+    @Column(columnDefinition = "TEXT")
+    private String instructions;
     private Instant startDate;
     private Instant endDate;
     private Boolean isPublic;
     private String estimatedTime;
     private String status; // Enum
-    private String RewardType;
-    private String RewardValue;
+    private String rewardType;
+    private String rewardValue;
+
+    // @Enumerated(EnumType.STRING)
+    // @Column(nullable = false)
+    // private CampaignStatus campaignStatus = CampaignStatus.PENDING;
 
     @ManyToOne
     @JsonBackReference

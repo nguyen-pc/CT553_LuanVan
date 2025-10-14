@@ -43,6 +43,8 @@ public class Project {
     private long id;
 
     private String projectName;
+    
+    @Column(columnDefinition = "TEXT")
     private String description;
     private boolean status; // Enum
     private Date startDate;

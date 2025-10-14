@@ -27,6 +27,7 @@ public class BugReport {
     private long id;
 
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private SeverityEnum severity;
     private PriorityEnum priority;
@@ -41,7 +42,7 @@ public class BugReport {
     @JoinColumn(name = "bug_type_id")
     private BugType bugType;
 
-      private Instant createdAt;
+    private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
     private String updatedBy;

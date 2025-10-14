@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import com.vn.beta_testing.util.constant.NotificationEnum;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,9 +16,11 @@ public class Notification {
 
     private NotificationEnum type;
     private String title;
+    
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private boolean isRead = false;
- 
+
     private Instant createdAt;
 }

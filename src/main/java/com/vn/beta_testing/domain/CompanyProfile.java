@@ -58,6 +58,7 @@ public class CompanyProfile {
     private String companyAddressMST;
     private Date companyDateMST;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
     private String logo;
     private String banner;
