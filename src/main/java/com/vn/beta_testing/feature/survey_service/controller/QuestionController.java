@@ -88,9 +88,9 @@ public class QuestionController {
         }
     }
 
-    @GetMapping("/project/{projectId}/campaign/{campaignId}/survey/{surveyId}/question/all")
-    public ResponseEntity<?> getAllQuestionOfSurvey(@PathVariable("projectId") long projectId,
-            @PathVariable("campaignId") long campaignId, @PathVariable("surveyId") long surveyId) {
+    @GetMapping("/campaign/{campaignId}/survey/{surveyId}/question/all")
+    public ResponseEntity<?> getAllQuestionOfSurvey(@PathVariable("campaignId") long campaignId,
+            @PathVariable("surveyId") long surveyId) {
         try {
             List<Question> questions = this.questionService.getAllQuestionOfSurvey(campaignId, surveyId);
             return ResponseEntity.ok(questions);

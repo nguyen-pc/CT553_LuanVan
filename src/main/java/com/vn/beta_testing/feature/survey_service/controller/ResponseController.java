@@ -24,9 +24,8 @@ public class ResponseController {
         this.responseService = responseService;
     }
 
-    @PostMapping("project/{projectId}/campaign/{campaignId}/survey/{surveyId}/response")
-    public ResponseEntity<?> createResponse(@PathVariable("projectId") long projectId,
-            @PathVariable("campaignId") long campaignId,
+    @PostMapping("campaign/{campaignId}/survey/{surveyId}/response")
+    public ResponseEntity<?> createResponse(@PathVariable("campaignId") long campaignId,
             @PathVariable("surveyId") long surveyId,
             @RequestBody Response response) {
         try {

@@ -1,11 +1,9 @@
 package com.vn.beta_testing.domain;
 
-import java.io.ObjectInputFilter.Status;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.security.access.method.P;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vn.beta_testing.util.SecurityUtil;
@@ -29,18 +27,38 @@ public class BugReport {
     private String title;
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Enumerated(EnumType.STRING)
     private SeverityEnum severity;
+
+    @Enumerated(EnumType.STRING)
     private PriorityEnum priority;
+
+    @Enumerated(EnumType.STRING)
     private StatusBugEnum status;
+
     private String stepsToReproduce;
     private String expectedResult;
     private String actualResult;
+
     // private LocalDateTime createdAt;
     // private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tester_id")
+    private User tester;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignee_id")
+    private User assignee;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bug_type_id")
     private BugType bugType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "campaign_id")
+    private Campaign campaign;
 
     private Instant createdAt;
     private Instant updatedAt;
