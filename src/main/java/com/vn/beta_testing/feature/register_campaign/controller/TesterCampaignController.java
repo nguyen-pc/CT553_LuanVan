@@ -40,12 +40,14 @@ public class TesterCampaignController {
 
     // @GetMapping("/campaign/{campaignId}/testers")
     // @ApiMessage("Get testers by campaign")
-    // public ResponseEntity<List<TesterCampaignDTO>> getTestersByCampaign(@PathVariable("campaignId") Long campaignId) {
-    //     List<TesterCampaign> testers = this.testerCampaignService.getTestersByCampaign(campaignId);
-    //     List<TesterCampaignDTO> dtos = testers.stream()
-    //             .map(this.testerCampaignService::toDTO)
-    //             .toList();
-    //     return ResponseEntity.ok().body(dtos);
+    // public ResponseEntity<List<TesterCampaignDTO>>
+    // getTestersByCampaign(@PathVariable("campaignId") Long campaignId) {
+    // List<TesterCampaign> testers =
+    // this.testerCampaignService.getTestersByCampaign(campaignId);
+    // List<TesterCampaignDTO> dtos = testers.stream()
+    // .map(this.testerCampaignService::toDTO)
+    // .toList();
+    // return ResponseEntity.ok().body(dtos);
     // }
 
     @PostMapping("/campaign/tester-campaign/apply")
@@ -111,5 +113,19 @@ public class TesterCampaignController {
                 .toList();
 
         return ResponseEntity.ok().body(dtos);
+    }
+
+    @PutMapping("/campaign/tester-campaign/upload")
+    @ApiMessage("Mark tester upload recording by userId and campaignId")
+    public ResponseEntity<TesterCampaignDTO> markUploadByUserAndCampaign(
+            @RequestBody Map<String, String> body) {
+
+        Long userId = Long.valueOf(body.get("userId"));
+        Long campaignId = Long.valueOf(body.get("campaignId"));
+        String fileName = body.get("fileName");
+
+        TesterCampaign updated = testerCampaignService.markUploadedByUserAndCampaign(userId, campaignId, fileName);
+        TesterCampaignDTO dto = testerCampaignService.toDTO(updated);
+        return ResponseEntity.ok(dto);
     }
 }

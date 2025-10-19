@@ -20,8 +20,11 @@ import com.vn.beta_testing.domain.Campaign;
 import com.vn.beta_testing.domain.Project;
 import com.vn.beta_testing.domain.Survey;
 import com.vn.beta_testing.feature.company_service.service.CampaignService;
+import com.vn.beta_testing.feature.survey_service.DTO.SurveyDTO;
+import com.vn.beta_testing.feature.survey_service.mapper.SurveyMapper;
 import com.vn.beta_testing.feature.survey_service.service.SurveyService;
 import com.vn.beta_testing.util.SecurityUtil;
+import com.vn.beta_testing.util.annotation.ApiMessage;
 import com.vn.beta_testing.util.error.IdInvalidException;
 
 import jakarta.validation.Valid;
@@ -40,15 +43,22 @@ public class SurveyController {
     }
 
     @GetMapping("/campaign/{id}/survey/{surveyId}")
+    @ApiMessage("Get survey by id")
     public ResponseEntity<Survey> getSurvey(@PathVariable("id") long id, @PathVariable("surveyId") long surveyId) {
         Survey survey = surveyService.getSurveyById(surveyId);
         return ResponseEntity.ok(survey);
     }
 
     @GetMapping("/campaign/{id}/survey")
-    public ResponseEntity<List<Survey>> getSurveys(@PathVariable("id") long id) {
+    @ApiMessage("Get surveys by campaign id")
+    public ResponseEntity<List<SurveyDTO>> getSurveys(@PathVariable("id") long id) {
         List<Survey> surveys = surveyService.getSurveysByCampaignId(id);
-        return ResponseEntity.ok(surveys);
+        if (surveys == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<SurveyDTO> dtos = SurveyMapper.toDTOList(surveys);
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping("/campaign/{id}/survey")

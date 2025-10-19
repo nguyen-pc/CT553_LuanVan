@@ -60,7 +60,9 @@ public class BugReportMapper {
         dto.setActualResult(entity.getActualResult());
 
         if (entity.getTester() != null) dto.setTesterId(entity.getTester().getId());
+        if (entity.getTester() != null) dto.setTesterUserName(entity.getTester().getName());
         if (entity.getAssignee() != null) dto.setAssigneeId(entity.getAssignee().getId());
+        if (entity.getAssignee() != null) dto.setAssigneeName(entity.getAssignee().getName());
         if (entity.getBugType() != null) dto.setBugTypeId(entity.getBugType().getId());
         if (entity.getCampaign() != null) dto.setCampaignId(entity.getCampaign().getId());
 

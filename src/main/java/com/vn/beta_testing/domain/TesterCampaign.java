@@ -36,6 +36,8 @@ public class TesterCampaign {
     private Instant joinDate = Instant.now();
     private Instant completionDate;
     private String note;
+    private boolean isUpload = false;
+    private String uploadLink;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

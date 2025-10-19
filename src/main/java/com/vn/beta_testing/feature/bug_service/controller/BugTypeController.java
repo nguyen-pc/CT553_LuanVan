@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/bug-types")
+@RequestMapping("/api/v1/bugs/bug-type")
 public class BugTypeController {
 
     private final BugTypeService service;

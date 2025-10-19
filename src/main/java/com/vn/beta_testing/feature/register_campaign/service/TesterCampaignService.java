@@ -174,6 +174,8 @@ public class TesterCampaignService {
                 .note(entity.getNote())
                 .userId(entity.getUser() != null ? entity.getUser().getId() : null)
                 .joinDate(entity.getJoinDate())
+                .isUpload(entity.isUpload())
+                .uploadLink(entity.getUploadLink())
                 .campaign(CampaignMapper.toDTO(entity.getCampaign())) // 👈 ánh xạ campaign
                 .build();
     }
@@ -265,5 +267,19 @@ public class TesterCampaignService {
         }
 
         return response;
+    }
+
+    public TesterCampaign markUploadedByUserAndCampaign(Long userId, Long campaignId, String fileName) {
+        TesterCampaign testerCampaign = testerCampaignRepository
+                .findByUserIdAndCampaignId(userId, campaignId)
+                .orElseThrow(() -> new RuntimeException(
+                        "TesterCampaign not found for userId=" + userId + " and campaignId=" + campaignId));
+
+        testerCampaign.setUpload(true);
+        testerCampaign.setUploadLink("http://localhost:8081/storage/" + campaignId + "/" + fileName);
+        testerCampaign.setCompletionDate(Instant.now());
+        testerCampaign.setProgress(50); 
+
+        return testerCampaignRepository.save(testerCampaign);
     }
 }

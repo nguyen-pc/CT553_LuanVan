@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.vn.beta_testing.feature.test_execution.DTO.TesterSurveyDTO;
 import com.vn.beta_testing.feature.test_execution.service.TesterSurveyService;
+import com.vn.beta_testing.util.annotation.ApiMessage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,16 +19,28 @@ public class TesterSurveyController {
     private final TesterSurveyService testerSurveyService;
 
     @PostMapping("/create")
+    @ApiMessage("Tester survey created successfully")
     public ResponseEntity<TesterSurveyDTO> create(@RequestBody TesterSurveyDTO dto) {
         return ResponseEntity.ok(testerSurveyService.create(dto));
     }
 
     @GetMapping
+    @ApiMessage("Get all tester surveys successfully")
     public ResponseEntity<List<TesterSurveyDTO>> getAll() {
         return ResponseEntity.ok(testerSurveyService.getAll());
     }
 
+    @GetMapping("/status")
+    @ApiMessage("Get tester survey status successfully")
+    public ResponseEntity<TesterSurveyDTO> getByStatus(
+            @RequestParam("userId") Long userId,
+            @RequestParam("surveyId") Long surveyId) {
+        TesterSurveyDTO dto = testerSurveyService.getByStatus(userId, surveyId);
+        return ResponseEntity.ok(dto);
+    }
+
     @GetMapping("/{id}")
+    @ApiMessage("Get tester survey by ID successfully")
     public ResponseEntity<TesterSurveyDTO> getById(@PathVariable Long id) {
         return testerSurveyService.getById(id)
                 .map(ResponseEntity::ok)
@@ -35,6 +48,7 @@ public class TesterSurveyController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiMessage("Tester survey deleted successfully")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         testerSurveyService.delete(id);
         return ResponseEntity.noContent().build();

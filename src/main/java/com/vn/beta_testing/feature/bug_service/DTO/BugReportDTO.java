@@ -19,6 +19,9 @@ public class BugReportDTO {
     private String expectedResult;
     private String actualResult;
 
+    private String testerUserName;
+    private String assigneeName;
+
     private Long testerId;
     private Long assigneeId;
     private Long bugTypeId;

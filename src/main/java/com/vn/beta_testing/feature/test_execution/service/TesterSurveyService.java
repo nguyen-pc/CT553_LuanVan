@@ -63,6 +63,22 @@ public class TesterSurveyService {
         testerSurveyRepository.deleteById(id);
     }
 
+    public TesterSurveyDTO getByStatus(Long userId, Long surveyId) {
+        Optional<TesterSurvey> opt = testerSurveyRepository.findByUserIdAndSurvey_SurveyId(userId, surveyId);
+
+        // Nếu chưa có record thì có thể trả về "chưa hoàn thành"
+        if (opt.isEmpty()) {
+            TesterSurveyDTO dto = new TesterSurveyDTO();
+            dto.setUserId(userId);
+            dto.setSurveyId(surveyId);
+            dto.setCompleted(false);
+            dto.setCompletionDate(null);
+            return dto;
+        }
+
+        return toDTO(opt.get());
+    }
+
     private TesterSurveyDTO toDTO(TesterSurvey e) {
         TesterSurveyDTO dto = new TesterSurveyDTO();
         dto.setId(e.getId());

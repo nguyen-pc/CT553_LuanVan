@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vn.beta_testing.domain.File;
@@ -25,10 +27,13 @@ import com.vn.beta_testing.domain.Survey;
 import com.vn.beta_testing.domain.response.file.ResUploadFileDTO;
 import com.vn.beta_testing.feature.survey_service.service.FileService;
 import com.vn.beta_testing.feature.survey_service.service.SurveyService;
+import com.vn.beta_testing.util.annotation.ApiMessage;
 import com.vn.beta_testing.util.error.StorageException;
 
+@RestController
+@RequestMapping("/api/v1")
 public class FileController {
-     private final FileService fileService;
+    private final FileService fileService;
     private final SurveyService surveyService;
 
     @Value("${beta_testing.upload-file.base-uri}")
@@ -43,6 +48,7 @@ public class FileController {
     }
 
     @PostMapping("/files")
+    @ApiMessage("Upload single file")
     public ResponseEntity<ResUploadFileDTO> upload(@RequestParam(name = "file", required = false) MultipartFile file,
             @RequestParam("folder") String folder)
             throws URISyntaxException, IOException, StorageException {

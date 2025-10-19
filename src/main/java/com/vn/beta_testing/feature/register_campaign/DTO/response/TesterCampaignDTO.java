@@ -25,5 +25,7 @@ public class TesterCampaignDTO {
     private String note;
     private Long userId;
     private Instant joinDate;
+    private boolean isUpload;
+    private String uploadLink;
     private CampaignDTO campaign; // 👈 Thêm phần này
 }

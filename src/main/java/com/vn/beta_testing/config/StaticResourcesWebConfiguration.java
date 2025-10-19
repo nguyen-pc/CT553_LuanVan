@@ -11,9 +11,9 @@ public class StaticResourcesWebConfiguration
     @Value("${beta_testing.upload-file.base-uri}")
     private String baseUri;
 
-    // @Override
-    // public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    // registry.addResourceHandler("/storage/**")
-    // .addResourceLocations(baseUri);
-    // }
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    registry.addResourceHandler("/storage/**")
+    .addResourceLocations(baseUri);
+    }
 }

@@ -1,8 +1,9 @@
 package com.vn.beta_testing.feature.bug_service.controller;
 
-import com.vn.beta_testing.domain.BugChatMessage;
-import com.vn.beta_testing.feature.bug_service.service.BugChatService;
 
+import com.vn.beta_testing.domain.BugChatMessage;
+import com.vn.beta_testing.feature.bug_service.DTO.BugChatMessageDTO;
+import com.vn.beta_testing.feature.bug_service.service.BugChatService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -16,16 +17,17 @@ public class BugChatController {
         this.service = service;
     }
 
+    // 📨 Gửi tin nhắn (REST + broadcast realtime)
     @PostMapping("/{bugId}/chat")
-    public BugChatMessage sendMessage(@PathVariable Long bugId, @RequestBody BugChatMessage message) {
-        // chỉ cần set bugReportId để map JPA tự động
-        if (message.getBugReport() != null)
-            message.getBugReport().setId(bugId);
-        return service.sendMessage(message);
+    public BugChatMessageDTO sendMessage(
+            @PathVariable("bugId") Long bugId,
+            @RequestBody BugChatMessage message) {
+        return service.sendMessage(bugId, message);
     }
 
+    // 📜 Lấy lịch sử chat
     @GetMapping("/{bugId}/chat")
-    public List<BugChatMessage> getMessages(@PathVariable Long bugId) {
+    public List<BugChatMessageDTO> getMessages(@PathVariable("bugId") Long bugId) {
         return service.getMessages(bugId);
     }
 }

@@ -1,5 +1,7 @@
 package com.vn.beta_testing.domain;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,9 +25,11 @@ public class BugChatMessage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bug_report_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private BugReport bugReport;
 }
