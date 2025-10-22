@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.vn.beta_testing.feature.test_execution.DTO.TesterResponseDTO;
 import com.vn.beta_testing.feature.test_execution.DTO.TesterSurveyDTO;
 import com.vn.beta_testing.feature.test_execution.service.TesterSurveyService;
 import com.vn.beta_testing.util.annotation.ApiMessage;
@@ -39,9 +40,14 @@ public class TesterSurveyController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping("/survey/{surveyId}")
+    @ApiMessage("Get tester surveys by survey ID successfully")
+    public ResponseEntity<List<TesterResponseDTO>> getBySurveyId(@PathVariable("surveyId") Long surveyId) {
+        return ResponseEntity.ok(testerSurveyService.getBySurveyId(surveyId));
+    }
     @GetMapping("/{id}")
     @ApiMessage("Get tester survey by ID successfully")
-    public ResponseEntity<TesterSurveyDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<TesterSurveyDTO> getById(@PathVariable("id") Long id) {
         return testerSurveyService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -49,8 +55,10 @@ public class TesterSurveyController {
 
     @DeleteMapping("/{id}")
     @ApiMessage("Tester survey deleted successfully")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         testerSurveyService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }

@@ -250,6 +250,12 @@ public class TesterCampaignService {
         return dto;
     }
 
+    public TesterCampaign getTesterCampaign(Long userId, Long campaignId) {
+        return testerCampaignRepository
+                .findByUserIdAndCampaignId(userId, campaignId)
+                .orElse(null);
+    }
+
     public Map<String, Object> getTesterCampaignStatus(Long userId, Long campaignId) {
         Optional<TesterCampaign> optional = testerCampaignRepository
                 .findByUserIdAndCampaignId(userId, campaignId);

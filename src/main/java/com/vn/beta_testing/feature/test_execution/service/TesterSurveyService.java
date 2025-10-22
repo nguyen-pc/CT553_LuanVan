@@ -15,6 +15,7 @@ import com.vn.beta_testing.domain.User;
 import com.vn.beta_testing.feature.auth_service.repository.UserRepository;
 import com.vn.beta_testing.feature.survey_service.repository.ResponseRepository;
 import com.vn.beta_testing.feature.survey_service.repository.SurveyRepository;
+import com.vn.beta_testing.feature.test_execution.DTO.TesterResponseDTO;
 import com.vn.beta_testing.feature.test_execution.DTO.TesterSurveyDTO;
 import com.vn.beta_testing.feature.test_execution.repository.TesterSurveyRepository;
 
@@ -51,6 +52,8 @@ public class TesterSurveyService {
         return dto;
     }
 
+    // public TesterResponseDTO 
+
     public List<TesterSurveyDTO> getAll() {
         return testerSurveyRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
     }
@@ -79,6 +82,11 @@ public class TesterSurveyService {
         return toDTO(opt.get());
     }
 
+     public List<TesterResponseDTO> getBySurveyId(Long surveyId) {
+        return testerSurveyRepository.findBySurvey_SurveyId(surveyId)
+                .stream().map(this::toResponseDTO).collect(Collectors.toList());
+    }
+
     private TesterSurveyDTO toDTO(TesterSurvey e) {
         TesterSurveyDTO dto = new TesterSurveyDTO();
         dto.setId(e.getId());
@@ -87,6 +95,33 @@ public class TesterSurveyService {
         dto.setUserId(e.getUser() != null ? e.getUser().getId() : null);
         dto.setSurveyId(e.getSurvey() != null ? e.getSurvey().getSurveyId() : null);
         dto.setResponseId(e.getResponse() != null ? e.getResponse().getResponseId() : null);
+        return dto;
+    }
+
+    private TesterResponseDTO toResponseDTO(TesterSurvey e) {
+        TesterResponseDTO dto = new TesterResponseDTO();
+        dto.setId(e.getId());
+        dto.setCompleted(e.getCompleted());
+        dto.setCompletionDate(e.getCompletionDate());
+
+        // User summary
+        if (e.getUser() != null) {
+            dto.setUserId(e.getUser().getId());
+            dto.setUsername(e.getUser().getName()); // hoặc getName()
+            dto.setEmail(e.getUser().getEmail());
+        }
+
+        // Survey summary
+        if (e.getSurvey() != null) {
+            dto.setSurveyId(e.getSurvey().getSurveyId());
+            dto.setSurveyTitle(e.getSurvey().getSurveyName()); // hoặc getTitle() tùy field
+        }
+
+        // Response giữ nguyên + id
+        if (e.getResponse() != null) {
+            dto.setResponseId(e.getResponse().getResponseId());
+            dto.setResponse(e.getResponse());
+        }
         return dto;
     }
 }

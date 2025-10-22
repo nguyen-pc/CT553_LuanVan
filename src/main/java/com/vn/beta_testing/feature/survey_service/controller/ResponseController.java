@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vn.beta_testing.domain.Response;
 import com.vn.beta_testing.feature.survey_service.service.ResponseService;
+import com.vn.beta_testing.util.annotation.ApiMessage;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -25,6 +26,7 @@ public class ResponseController {
     }
 
     @PostMapping("campaign/{campaignId}/survey/{surveyId}/response")
+    @ApiMessage("Create a response for a survey in a campaign")
     public ResponseEntity<?> createResponse(@PathVariable("campaignId") long campaignId,
             @PathVariable("surveyId") long surveyId,
             @RequestBody Response response) {
@@ -39,10 +41,11 @@ public class ResponseController {
     }
 
     @GetMapping("project/{projectId}/campaign/{campaignId}/survey/{surveyId}/response/{responseId}")
+    @ApiMessage("Get a response for a survey in a campaign")
     public ResponseEntity<?> getResponse(@PathVariable("projectId") long projectId,
             @PathVariable("campaignId") long campaignId,
             @PathVariable("surveyId") long surveyId,
-            @PathVariable long responseId) {
+            @PathVariable("responseId") long responseId) {
         try {
             Response dbResponse = this.responseService.getResponse(campaignId, surveyId, responseId);
             return ResponseEntity.ok(dbResponse);
@@ -54,10 +57,11 @@ public class ResponseController {
     }
 
     @DeleteMapping("project/{projectId}/campaign/{campaignId}/survey/{surveyId}/response/{responseId}")
+    @ApiMessage("Delete a response for a survey in a campaign")
     public ResponseEntity<?> deleteResponse(@PathVariable("projectId") long projectId,
             @PathVariable("campaignId") long campaignId,
             @PathVariable("surveyId") long surveyId,
-            @PathVariable long responseId) {
+            @PathVariable("responseId") long responseId) {
         try {
             this.responseService.deleteResponse(campaignId, surveyId, responseId);
             return ResponseEntity.ok("Delete successfully a response with id: " + responseId);
@@ -69,6 +73,7 @@ public class ResponseController {
     }
 
     @GetMapping("project/{projectId}/campaign/{campaignId}/survey/{surveyId}/response/all")
+    @ApiMessage("Get all responses of a survey in a campaign")
     public ResponseEntity<?> getAllResponseOfSurvey(@PathVariable("projectId") long projectId,
             @PathVariable("campaignId") long campaignId,
             @PathVariable("surveyId") long surveyId) {

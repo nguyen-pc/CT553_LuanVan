@@ -101,6 +101,20 @@ public class TesterCampaignController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/campaign/{campaignId}/tester-campaign/user/{userId}")
+    @ApiMessage("Get tester campaign by user and campaign")
+    public ResponseEntity<TesterCampaignDTO> getTesterCampaignByUserAndCampaign(
+            @PathVariable("campaignId") Long campaignId,
+            @PathVariable("userId") Long userId) {
+
+        TesterCampaign testerCampaign = this.testerCampaignService.getTesterCampaign(userId, campaignId);
+        if (testerCampaign == null) {
+            return ResponseEntity.notFound().build();
+        }
+        TesterCampaignDTO dto = this.testerCampaignService.toDTO(testerCampaign);
+        return ResponseEntity.ok(dto);
+    }
+
     @GetMapping("/campaign/tester-campaigns/user/{userId}")
     @ApiMessage("Get all campaigns that a user has joined")
     public ResponseEntity<List<TesterCampaignDTO>> getCampaignsByUser(

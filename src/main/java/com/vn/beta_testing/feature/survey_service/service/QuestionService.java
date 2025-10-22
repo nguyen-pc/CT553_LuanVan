@@ -2,30 +2,41 @@ package com.vn.beta_testing.feature.survey_service.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.vn.beta_testing.domain.Answer;
 import com.vn.beta_testing.domain.Campaign;
 import com.vn.beta_testing.domain.Choice;
 import com.vn.beta_testing.domain.Question;
 import com.vn.beta_testing.domain.Survey;
 import com.vn.beta_testing.feature.company_service.service.CampaignService;
+import com.vn.beta_testing.feature.survey_service.DTO.AnswerDetailDTO;
+import com.vn.beta_testing.feature.survey_service.DTO.QuestionResponseDTO;
+import com.vn.beta_testing.feature.survey_service.repository.AnswerRepository;
 import com.vn.beta_testing.feature.survey_service.repository.QuestionRepository;
+import com.vn.beta_testing.feature.test_execution.repository.TesterSurveyRepository;
 
 @Service
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final SurveyService surveyService;
     private final CampaignService campaignService;
+    private final AnswerRepository answerRepository;
+    private final TesterSurveyRepository testerSurveyRepository;
 
     public QuestionService(QuestionRepository questionRepository, SurveyService surveyService,
-            CampaignService campaignService) {
+            CampaignService campaignService, AnswerRepository answerRepository,
+            TesterSurveyRepository testerSurveyRepository) {
         this.questionRepository = questionRepository;
         this.surveyService = surveyService;
         this.campaignService = campaignService;
+        this.answerRepository = answerRepository;
+        this.testerSurveyRepository = testerSurveyRepository;
     }
 
-     public void checkParameter(Long campaignId, Long surveyId) {
+    public void checkParameter(Long campaignId, Long surveyId) {
         // Check if the Campaign exists
         Campaign dbCampaign = this.campaignService.fetchCampaignById(campaignId);
         if (dbCampaign == null)
@@ -128,4 +139,51 @@ public class QuestionService {
         checkParameter(campaignId, surveyId);
         return this.questionRepository.findBySurvey_SurveyId(surveyId);
     }
+
+    public QuestionResponseDTO getResponsesByQuestion(Long questionId) {
+        List<Answer> answers = answerRepository.findAllByQuestionId(questionId);
+
+        if (answers.isEmpty()) {
+            throw new RuntimeException("No responses found for question ID " + questionId);
+        }
+
+        var first = answers.get(0).getQuestion();
+
+        QuestionResponseDTO dto = new QuestionResponseDTO();
+        dto.setQuestionId(first.getQuestionId());
+        dto.setQuestionName(first.getQuestionName());
+        dto.setQuestionType(first.getQuestionType().name());
+
+        dto.setAnswers(
+                answers.stream().flatMap(a -> {
+                    if (a.getChoices() != null && !a.getChoices().isEmpty()) {
+                        return a.getChoices().stream().map(choice -> {
+                            AnswerDetailDTO d = new AnswerDetailDTO();
+                            d.setAnswerId(a.getAnswerId());
+                            d.setChoiceText(choice.getChoiceText());
+                            d.setResponseId(a.getResponse().getResponseId());
+                            d.setSubmittedAt(a.getResponse().getSubmittedAt());
+
+                            testerSurveyRepository.findByResponseId(a.getResponse().getResponseId())
+                                    .ifPresent(ts -> d.setUserEmail(ts.getUser().getEmail()));
+
+                            return d;
+                        });
+                    } else {
+                        AnswerDetailDTO d = new AnswerDetailDTO();
+                        d.setAnswerId(a.getAnswerId());
+                        d.setAnswerText(a.getAnswerText());
+                        d.setResponseId(a.getResponse().getResponseId());
+                        d.setSubmittedAt(a.getResponse().getSubmittedAt());
+
+                        testerSurveyRepository.findByResponseId(a.getResponse().getResponseId())
+                                .ifPresent(ts -> d.setUserEmail(ts.getUser().getEmail()));
+
+                        return java.util.stream.Stream.of(d);
+                    }
+                }).collect(Collectors.toList()));
+
+        return dto;
+    }
+
 }

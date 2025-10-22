@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vn.beta_testing.domain.Question;
+import com.vn.beta_testing.feature.survey_service.DTO.QuestionResponseDTO;
 import com.vn.beta_testing.feature.survey_service.service.QuestionService;
 import com.vn.beta_testing.feature.survey_service.service.SurveyService;
+import com.vn.beta_testing.util.annotation.ApiMessage;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -97,5 +99,11 @@ public class QuestionController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Internal error: " + e.getMessage());
         }
+    }
+
+    @GetMapping("campaign/question/{questionId}/responses")
+    @ApiMessage("Get all individual responses for a specific question successfully")
+    public ResponseEntity<QuestionResponseDTO> getResponses(@PathVariable("questionId") Long questionId) {
+        return ResponseEntity.ok(questionService.getResponsesByQuestion(questionId));
     }
 }
