@@ -50,6 +50,11 @@ public class SecurityConfiguration {
                 "/api/v1/auth/logout",
                 "/storage/**",
                 "/ws/**",
+                "/api/v1/projects/**",
+                "/api/v1/project/{id}/campaigns",
+                "/api/v1/campaigns/**",
+                "/api/v1/email/**",
+                "/api/v1/company/create"
         };
 
         http

@@ -58,9 +58,11 @@ public class Campaign {
     private String rewardType;
     private String rewardValue;
 
-    // @Enumerated(EnumType.STRING)
-    // @Column(nullable = false)
-    // private CampaignStatus campaignStatus = CampaignStatus.PENDING;
+    private boolean isDraft = true;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CampaignStatus campaignStatus = CampaignStatus.PENDING;
 
     @ManyToOne
     @JsonBackReference

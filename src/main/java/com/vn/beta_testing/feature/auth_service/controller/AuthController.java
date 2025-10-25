@@ -35,7 +35,7 @@ import com.vn.beta_testing.domain.response.user.ResCreateUserDTO;
 import com.vn.beta_testing.feature.auth_service.repository.PasswordResetTokenRepository;
 import com.vn.beta_testing.feature.auth_service.repository.UserRepository;
 import com.vn.beta_testing.feature.auth_service.service.UserService;
-import com.vn.beta_testing.feature.email_service.EmailService;
+import com.vn.beta_testing.feature.email_service.service.EmailService;
 import com.vn.beta_testing.util.SecurityUtil;
 import com.vn.beta_testing.util.annotation.ApiMessage;
 import com.vn.beta_testing.util.error.IdInvalidException;

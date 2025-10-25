@@ -7,6 +7,7 @@ import com.vn.beta_testing.domain.User;
 import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.domain.response.user.ResCreateUserDTO;
 import com.vn.beta_testing.domain.response.user.ResUpdateUserDTO;
+import com.vn.beta_testing.domain.response.user.ResUserDTO;
 import com.vn.beta_testing.feature.auth_service.service.UserService;
 import com.vn.beta_testing.util.annotation.ApiMessage;
 import com.vn.beta_testing.util.error.IdInvalidException;
@@ -114,5 +115,17 @@ public class UserController {
         }
 
         return ResponseEntity.ok(this.userService.convertToResUpdateUserDTO(user));
+    }
+
+    @GetMapping("/users/company/{companyId}")
+    @ApiMessage("Fetch users by company ID")
+    public ResponseEntity<List<ResUserDTO>> getUsersByCompanyId(@PathVariable("companyId") Long companyId) {
+        List<ResUserDTO> users = userService.fetchUsersByCompanyId(companyId);
+
+        if (users == null || users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+
+        return ResponseEntity.ok(users);
     }
 }

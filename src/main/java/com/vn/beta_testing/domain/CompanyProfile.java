@@ -73,21 +73,21 @@ public class CompanyProfile {
     private String createdBy;
     private String updatedBy;
 
-    @PrePersist
-    public void handleBeforeCreate() {
-        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-                ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
+    // @PrePersist
+    // public void handleBeforeCreate() {
+    //     this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+    //             ? SecurityUtil.getCurrentUserLogin().get()
+    //             : "";
 
-        this.createdAt = Instant.now();
-    }
+    //     this.createdAt = Instant.now();
+    // }
 
-    @PreUpdate
-    public void handleBeforeUpdate() {
-        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-                ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
+    // @PreUpdate
+    // public void handleBeforeUpdate() {
+    //     this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+    //             ? SecurityUtil.getCurrentUserLogin().get()
+    //             : "";
 
-        this.updatedAt = Instant.now();
-    }
+    //     this.updatedAt = Instant.now();
+    // }
 }

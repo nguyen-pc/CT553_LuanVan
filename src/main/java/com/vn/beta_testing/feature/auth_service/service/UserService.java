@@ -19,24 +19,26 @@ import com.vn.beta_testing.domain.response.user.ResCreateUserDTO;
 import com.vn.beta_testing.domain.response.user.ResUpdateUserDTO;
 import com.vn.beta_testing.domain.response.user.ResUserDTO;
 import com.vn.beta_testing.feature.auth_service.repository.UserRepository;
+import com.vn.beta_testing.feature.company_service.service.CompanyService;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final CompanyService companyService;
     private final RoleService roleService;
 
-    public UserService(UserRepository userRepository, RoleService roleService) {
+    public UserService(UserRepository userRepository, CompanyService companyService, RoleService roleService) {
         this.userRepository = userRepository;
+        this.companyService = companyService;
         this.roleService = roleService;
     }
 
     public User handleCreateUser(User user) {
         // Check spa
-        // if (user.getCompany() != null) {
-        // Optional<Company> companyOptional =
-        // this.companyService.findById(user.getCompany().getId());
-        // user.setCompany(companyOptional.isPresent() ? companyOptional.get() : null);
-        // }
+        if (user.getCompanyProfile() != null) {
+            CompanyProfile companyOptional = this.companyService.fetchCompanyById(user.getCompanyProfile().getId());
+            user.setCompanyProfile(companyOptional != null ? companyOptional : null);
+        }
         // check role
         if (user.getRole() != null) {
             Role r = this.roleService.fetchById(user.getRole().getId());
@@ -57,12 +59,10 @@ public class UserService {
             currentUser.setPhoneNumber(reqUser.getPhoneNumber());
         }
         // // check company
-        // if (reqUser.getClinic() != null) {
-        // Optional<CompanyProfile> clinicOptional =
-        // this.clinicService.findById(reqUser.getClinic().getId());
-        // currentUser.setClinic(clinicOptional.isPresent() ? clinicOptional.get() :
-        // null);
-        // }
+        if (reqUser.getCompanyProfile() != null) {
+            CompanyProfile companyOptional = this.companyService.fetchCompanyById(reqUser.getCompanyProfile().getId());
+            currentUser.setCompanyProfile(companyOptional != null ? companyOptional : null);
+        }
 
         // check roles
         if (reqUser.getRole() != null) {
@@ -166,6 +166,15 @@ public class UserService {
         // res.setGender(user.getGender());
         res.setUpdatedAt(user.getUpdatedAt());
         return res;
+    }
+
+    public List<ResUserDTO> fetchUsersByCompanyId(Long companyId) {
+        List<User> users = userRepository.findByCompanyProfile_Id(companyId);
+
+        // ✅ Map từng user sang DTO
+        return users.stream()
+                .map(this::convertToResUserDTO)
+                .toList(); // dùng toList() (Java 16+) hoặc Collectors.toList()
     }
 
     public ResUpdateUserDTO convertToResUpdateUserDTO(User user) {

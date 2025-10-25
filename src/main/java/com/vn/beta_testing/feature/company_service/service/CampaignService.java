@@ -18,7 +18,8 @@ public class CampaignService {
     private final ProjectService projectService;
     private final CampaignTypeService campaignTypeService;
 
-    public CampaignService(CampaignRepository campaignRepository, ProjectService projectService, CampaignTypeService campaignTypeService) {
+    public CampaignService(CampaignRepository campaignRepository, ProjectService projectService,
+            CampaignTypeService campaignTypeService) {
         this.campaignRepository = campaignRepository;
         this.projectService = projectService;
         this.campaignTypeService = campaignTypeService;
@@ -28,7 +29,7 @@ public class CampaignService {
         return this.campaignRepository.findById(id).orElse(null);
     }
 
-     public ResultPaginationDTO fetchAll(Specification<Campaign> spec, Pageable pageable) {
+    public ResultPaginationDTO fetchAll(Specification<Campaign> spec, Pageable pageable) {
         Page<Campaign> pageUser = this.campaignRepository.findAll(spec, pageable);
 
         ResultPaginationDTO rs = new ResultPaginationDTO();
@@ -49,12 +50,13 @@ public class CampaignService {
 
 
     public Campaign createCampaign(Campaign campaign) {
-        if(campaign.getProject() !=null){
+        if (campaign.getProject() != null) {
             Project project = this.projectService.fetchProjectById(campaign.getProject().getId());
             campaign.setProject(project != null ? project : null);
         }
-        if(campaign.getCampaignType() != null){
-            CampaignType campaignType = this.campaignTypeService.fetchCampaignTypeById(campaign.getCampaignType().getId());
+        if (campaign.getCampaignType() != null) {
+            CampaignType campaignType = this.campaignTypeService
+                    .fetchCampaignTypeById(campaign.getCampaignType().getId());
             campaign.setCampaignType(campaignType != null ? campaignType : null);
         }
         return this.campaignRepository.save(campaign);
@@ -73,16 +75,27 @@ public class CampaignService {
         existingCampaign.setStatus(campaign.getStatus());
         existingCampaign.setStartDate(campaign.getStartDate());
         existingCampaign.setEndDate(campaign.getEndDate());
-        if(campaign.getProject() !=null){
+        if (campaign.getProject() != null) {
             Project project = this.projectService.fetchProjectById(campaign.getProject().getId());
-            existingCampaign.setProject( project != null ? project : null);
+            existingCampaign.setProject(project != null ? project : null);
         }
-        if(campaign.getCampaignType() != null){
+        if (campaign.getCampaignType() != null) {
             // Assuming you have a CampaignTypeService to fetch CampaignType by ID
-            CampaignType campaignType = this.campaignTypeService.fetchCampaignTypeById(campaign.getCampaignType().getId());
+            CampaignType campaignType = this.campaignTypeService
+                    .fetchCampaignTypeById(campaign.getCampaignType().getId());
             existingCampaign.setCampaignType(campaignType != null ? campaignType : null);
         }
         return this.campaignRepository.save(existingCampaign);
+    }
+
+    public Campaign publishCampaign(Long id) {
+        Campaign campaign = campaignRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Campaign not found with id: " + id));
+        if (!campaign.isDraft()) {
+            return campaign;
+        }
+        campaign.setDraft(false);
+        return campaignRepository.save(campaign);
     }
 
 }
