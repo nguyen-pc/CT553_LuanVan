@@ -24,7 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.vn.beta_testing.domain.File;
 import com.vn.beta_testing.domain.Survey;
+import com.vn.beta_testing.domain.User;
 import com.vn.beta_testing.domain.response.file.ResUploadFileDTO;
+import com.vn.beta_testing.feature.auth_service.service.UserService;
+import com.vn.beta_testing.feature.survey_service.DTO.FileDTO;
 import com.vn.beta_testing.feature.survey_service.service.FileService;
 import com.vn.beta_testing.feature.survey_service.service.SurveyService;
 import com.vn.beta_testing.util.annotation.ApiMessage;
@@ -35,6 +38,7 @@ import com.vn.beta_testing.util.error.StorageException;
 public class FileController {
     private final FileService fileService;
     private final SurveyService surveyService;
+    private final UserService userService;
 
     @Value("${beta_testing.upload-file.base-uri}")
     private String baseURI;
@@ -42,22 +46,25 @@ public class FileController {
     @Value("${beta_testing.upload-file.base-url}")
     private String baseURL;
 
-    public FileController(FileService fileService, SurveyService surveyService) {
+    public FileController(FileService fileService, SurveyService surveyService, UserService userService) {
         this.fileService = fileService;
         this.surveyService = surveyService;
+        this.userService = userService;
     }
 
     @PostMapping("/files")
     @ApiMessage("Upload single file")
     public ResponseEntity<ResUploadFileDTO> upload(@RequestParam(name = "file", required = false) MultipartFile file,
-            @RequestParam("folder") String folder)
+            @RequestParam("folder") String folder, @RequestParam("uploader") String uploader)
             throws URISyntaxException, IOException, StorageException {
 
         if (file == null || file.isEmpty()) {
             throw new StorageException("File is empty. Please upload a file");
         }
+        Long uploaderId = Long.parseLong(uploader);
         long surveyId = Long.parseLong(folder);
         Survey survey = surveyService.getSurveyById(surveyId);
+        User uploaderUser = userService.fetchUserById(uploaderId);
 
         this.fileService.createUploadFolder(baseURI + folder);
 
@@ -70,7 +77,7 @@ public class FileController {
         }
 
         // Store files
-        String uploadFile = this.fileService.store(file, folder, survey);
+        String uploadFile = this.fileService.store(file, folder, survey, uploaderUser);
         ResUploadFileDTO res = new ResUploadFileDTO(uploadFile, Instant.now());
         return ResponseEntity.ok().body(res);
 
@@ -99,11 +106,11 @@ public class FileController {
     }
 
     @GetMapping("/files/{surveyId}/list")
-    public ResponseEntity<List<File>> listFiles(
+    public ResponseEntity<List<FileDTO>> listFiles(
             @PathVariable("surveyId") long surveyId) throws StorageException {
 
-        List<File> files = fileService.getFilesBySurveyId(surveyId);
-        return ResponseEntity.ok(files);
+        List<FileDTO> fileDTOs = fileService.getFileDTOsBySurveyId(surveyId);
+        return ResponseEntity.ok(fileDTOs);
     }
 
     @DeleteMapping("/files")

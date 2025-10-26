@@ -29,6 +29,7 @@ import com.vn.beta_testing.domain.Survey;
 import com.vn.beta_testing.domain.User;
 import com.vn.beta_testing.domain.response.file.ResUploadFileDTO;
 import com.vn.beta_testing.feature.auth_service.service.UserService;
+import com.vn.beta_testing.feature.bug_service.DTO.AttachmentDTO;
 import com.vn.beta_testing.feature.bug_service.service.AttachmentService;
 import com.vn.beta_testing.feature.company_service.service.CampaignService;
 import com.vn.beta_testing.feature.survey_service.service.FileService;
@@ -49,7 +50,8 @@ public class AttachmentController {
     @Value("${beta_testing.upload-file.base-url}")
     private String baseURL;
 
-    public AttachmentController(AttachmentService attachmentService, CampaignService campaignService, UserService userService) {
+    public AttachmentController(AttachmentService attachmentService, CampaignService campaignService,
+            UserService userService) {
         this.attachmentService = attachmentService;
         this.campaignService = campaignService;
         this.userService = userService;
@@ -70,11 +72,11 @@ public class AttachmentController {
         Campaign campaign = campaignService.fetchCampaignById(campaignId);
         User uploaderUser = userService.fetchUserById(uploaderId);
 
-
         this.attachmentService.createUploadFolder(baseURI + folder);
 
         String fileName = file.getOriginalFilename();
-        List<String> allowedExtensions = Arrays.asList("pdf", "jpg", "jpeg", "png", "doc", "docx", "mp4", "mp3", "webm");
+        List<String> allowedExtensions = Arrays.asList("pdf", "jpg", "jpeg", "png", "doc", "docx", "mp4", "mp3",
+                "webm");
         boolean isValid = allowedExtensions.stream().anyMatch(item -> fileName.toLowerCase().endsWith(item));
 
         if (!isValid) {
@@ -92,7 +94,6 @@ public class AttachmentController {
     public ResponseEntity<Resource> download(@RequestParam(name = "folder", required = false) String folder,
             @RequestParam(name = "fileName", required = false) String fileName)
             throws URISyntaxException, FileNotFoundException, StorageException {
-            
 
         // check file exist (and not a directory)
         long fileLength = this.attachmentService.getFileLength(fileName, folder);
@@ -145,5 +146,14 @@ public class AttachmentController {
         this.attachmentService.deleteFileRecord(fileRecord);
 
         return ResponseEntity.ok("File deleted successfully");
+    }
+
+    @GetMapping("/attachment/campaign/{campaignId}/videos")
+    @ApiMessage("Get all video attachments by campaign ID successfully")
+    public ResponseEntity<List<AttachmentDTO>> getVideoAttachmentsByCampaignId(
+            @PathVariable("campaignId") long campaignId) {
+
+        List<AttachmentDTO> videoFiles = attachmentService.getVideoFilesByCampaignId(campaignId);
+        return ResponseEntity.ok(videoFiles);
     }
 }

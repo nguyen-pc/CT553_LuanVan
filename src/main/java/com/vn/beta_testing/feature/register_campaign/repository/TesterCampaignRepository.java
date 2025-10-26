@@ -3,6 +3,7 @@ package com.vn.beta_testing.feature.register_campaign.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.vn.beta_testing.domain.TesterCampaign;
@@ -19,7 +20,6 @@ public interface TesterCampaignRepository
 
     List<TesterCampaign> findByUser_Id(Long userId);
 
-
     Optional<TesterCampaign> findByUserIdAndCampaignId(Long userId, Long campaignId);
 
     boolean existsByUser_IdAndCampaign_Id(Long userId, Long campaignId);
@@ -27,5 +27,15 @@ public interface TesterCampaignRepository
     long countByCampaignIdAndStatus(Long campaignId, TesterCampaignStatus status);
 
     long countByCampaignId(Long campaignId); // tổng số tester (được xem như "applied")
+
+    @Query(value = """
+                SELECT DATE(t.completionDate) AS date, COUNT(t.id) AS completedCount
+                FROM TesterCampaign t
+                WHERE t.completionDate IS NOT NULL
+                  AND t.campaign.id = :campaignId
+                GROUP BY DATE(t.completionDate)
+                ORDER BY DATE(t.completionDate)
+            """)
+    List<Object[]> getCompletionStatsByDate(@Param("campaignId") Long campaignId);
 
 }

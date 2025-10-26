@@ -29,6 +29,7 @@ import com.vn.beta_testing.domain.Attachment;
 import com.vn.beta_testing.domain.Campaign;
 import com.vn.beta_testing.domain.Survey;
 import com.vn.beta_testing.domain.User;
+import com.vn.beta_testing.feature.bug_service.DTO.AttachmentDTO;
 import com.vn.beta_testing.feature.bug_service.repository.AttachmentRepository;
 import com.vn.beta_testing.feature.survey_service.repository.FileRepository;
 import com.vn.beta_testing.util.SecurityUtil;
@@ -65,7 +66,8 @@ public class AttachmentService {
         }
     }
 
-    public String store(MultipartFile file, String folder, Campaign campaign, User uploader) throws URISyntaxException, IOException {
+    public String store(MultipartFile file, String folder, Campaign campaign, User uploader)
+            throws URISyntaxException, IOException {
         // create unique filename
         String finalName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
         URI uri = new URI(baseURI + folder + "/" + finalName);
@@ -154,12 +156,52 @@ public class AttachmentService {
     // }
 
     // public List<Attachment> getFilesBySurveyId(Long surveyId) {
-    //     List<Attachment> files = attachmentRepository.findBySurvey_SurveyId(surveyId);
-    //     if (files == null) {
-    //         return null;
-    //     }
-    //     return files;
+    // List<Attachment> files =
+    // attachmentRepository.findBySurvey_SurveyId(surveyId);
+    // if (files == null) {
+    // return null;
     // }
+    // return files;
+    // }
+
+    private AttachmentDTO toDTO(Attachment entity) {
+        AttachmentDTO dto = new AttachmentDTO();
+        dto.setId(entity.getId());
+        dto.setFileName(entity.getFileName());
+        dto.setFileUrl(entity.getFileUrl());
+        dto.setFileType(entity.getFileType());
+        dto.setFileSize(entity.getFileSize());
+        dto.setUploadedAt(entity.getUploadedAt());
+
+        if (entity.getUploader() != null) {
+            dto.setUploaderId(entity.getUploader().getId());
+            dto.setUploaderName(entity.getUploader().getName());
+            dto.setUploaderEmail(entity.getUploader().getEmail());
+        }
+
+        if (entity.getCampaign() != null) {
+            dto.setCampaignId(entity.getCampaign().getId());
+            dto.setCampaignName(entity.getCampaign().getTitle());
+        }
+
+        return dto;
+    }
+
+    public List<AttachmentDTO> getVideoFilesByCampaignId(Long campaignId) {
+        List<String> videoTypes = Arrays.asList("video/mp4", "video/webm");
+
+        List<Attachment> files = attachmentRepository.findByCampaign_IdAndFileTypeIn(campaignId, videoTypes);
+
+        // Nếu backend của bạn lưu fileType không chuẩn MIME, có thể thay thế bằng
+        // endsWith:
+        // List<Attachment> files = attachmentRepository.findByCampaign_Id(campaignId)
+        // .stream()
+        // .filter(f -> f.getFileName().toLowerCase().endsWith(".mp4") ||
+        // f.getFileName().toLowerCase().endsWith(".webm"))
+        // .collect(Collectors.toList());
+
+        return files.stream().map(this::toDTO).collect(Collectors.toList());
+    }
 
     @Transactional
     public void deleteFileRecord(Attachment file) {

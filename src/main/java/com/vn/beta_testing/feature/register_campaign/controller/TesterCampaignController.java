@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import com.turkraft.springfilter.boot.Filter;
 import com.vn.beta_testing.domain.TesterCampaign;
 import com.vn.beta_testing.domain.response.ResultPaginationDTO;
+import com.vn.beta_testing.feature.register_campaign.DTO.response.CompletionDailyDTO;
 import com.vn.beta_testing.feature.register_campaign.DTO.response.TesterCampaignDTO;
 import com.vn.beta_testing.feature.register_campaign.DTO.response.TesterCampaignStatsDTO;
 import com.vn.beta_testing.feature.register_campaign.service.TesterCampaignService;
@@ -141,5 +142,10 @@ public class TesterCampaignController {
         TesterCampaign updated = testerCampaignService.markUploadedByUserAndCampaign(userId, campaignId, fileName);
         TesterCampaignDTO dto = testerCampaignService.toDTO(updated);
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/campaign/{campaignId}/completion")
+    public ResponseEntity<List<CompletionDailyDTO>> getCompletionStats(@PathVariable("campaignId") Long campaignId) {
+        return ResponseEntity.ok(testerCampaignService.getCompletionStats(campaignId));
     }
 }

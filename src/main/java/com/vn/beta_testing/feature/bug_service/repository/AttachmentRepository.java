@@ -13,6 +13,9 @@ import com.vn.beta_testing.domain.Attachment;
 public interface AttachmentRepository extends JpaRepository<Attachment, Long>,
         JpaSpecificationExecutor<Attachment> {
     // List<Attachment> findBySurvey_SurveyId(Long surveyId);
+    List<Attachment> findByCampaign_Id(Long campaignId);
 
     Optional<Attachment> findByFileName(String fileName);
+
+    List<Attachment> findByCampaign_IdAndFileTypeIn(Long campaignId, List<String> fileTypes);
 }

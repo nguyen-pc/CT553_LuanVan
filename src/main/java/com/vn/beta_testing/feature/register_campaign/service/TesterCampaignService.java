@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.auth_service.service.UserService;
 import com.vn.beta_testing.feature.company_service.mapDTO.CampaignMapper;
 import com.vn.beta_testing.feature.company_service.service.CampaignService;
+import com.vn.beta_testing.feature.register_campaign.DTO.response.CompletionDailyDTO;
 import com.vn.beta_testing.feature.register_campaign.DTO.response.GetTesterCampaignDTO;
 import com.vn.beta_testing.feature.register_campaign.DTO.response.TesterCampaignDTO;
 import com.vn.beta_testing.feature.register_campaign.DTO.response.TesterCampaignStatsDTO;
@@ -284,8 +286,17 @@ public class TesterCampaignService {
         testerCampaign.setUpload(true);
         testerCampaign.setUploadLink("http://localhost:8081/storage/" + campaignId + "/" + fileName);
         testerCampaign.setCompletionDate(Instant.now());
-        testerCampaign.setProgress(50); 
+        testerCampaign.setProgress(50);
 
         return testerCampaignRepository.save(testerCampaign);
+    }
+
+    public List<CompletionDailyDTO> getCompletionStats(Long campaignId) {
+        List<Object[]> result = testerCampaignRepository.getCompletionStatsByDate(campaignId);
+        return result.stream()
+                .map(r -> new CompletionDailyDTO(
+                        ((java.sql.Date) r[0]).toLocalDate(),
+                        ((Number) r[1]).longValue()))
+                .collect(Collectors.toList());
     }
 }

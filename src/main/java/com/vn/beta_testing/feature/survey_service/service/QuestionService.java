@@ -1,5 +1,6 @@
 package com.vn.beta_testing.feature.survey_service.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -144,9 +145,13 @@ public class QuestionService {
         List<Answer> answers = answerRepository.findAllByQuestionId(questionId);
 
         if (answers.isEmpty()) {
-            throw new RuntimeException("No responses found for question ID " + questionId);
+            QuestionResponseDTO emptyDto = new QuestionResponseDTO();
+            emptyDto.setQuestionId(questionId);
+            emptyDto.setQuestionName("No question data found");
+            emptyDto.setQuestionType("UNKNOWN");
+            emptyDto.setAnswers(Collections.emptyList());
+            return emptyDto;
         }
-
         var first = answers.get(0).getQuestion();
 
         QuestionResponseDTO dto = new QuestionResponseDTO();

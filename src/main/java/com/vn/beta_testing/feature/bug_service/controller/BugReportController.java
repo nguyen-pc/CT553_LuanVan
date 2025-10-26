@@ -2,7 +2,9 @@ package com.vn.beta_testing.feature.bug_service.controller;
 
 import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.bug_service.DTO.BugReportDTO;
+import com.vn.beta_testing.feature.bug_service.DTO.BugSeverityDailyDTO;
 import com.vn.beta_testing.feature.bug_service.service.BugReportService;
+import com.vn.beta_testing.util.annotation.ApiMessage;
 import com.vn.beta_testing.util.constant.PriorityEnum;
 import com.vn.beta_testing.util.constant.SeverityEnum;
 import com.vn.beta_testing.util.constant.StatusBugEnum;
@@ -10,6 +12,7 @@ import com.vn.beta_testing.util.constant.StatusBugEnum;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -90,5 +93,12 @@ public class BugReportController {
         return service.filterWithPagination(
                 testerId, assigneeId, bugTypeId, campaignId,
                 status, priority, severity, pageable);
+    }
+
+    @GetMapping("/bug-trend/{campaignId}")
+    @ApiMessage("Get bug trend by severity for a campaign")
+    public ResponseEntity<List<BugSeverityDailyDTO>> getBugTrendBySeverity(
+            @PathVariable("campaignId") Long campaignId) {
+        return ResponseEntity.ok(service.getBugSeverityDailyStats(campaignId));
     }
 }

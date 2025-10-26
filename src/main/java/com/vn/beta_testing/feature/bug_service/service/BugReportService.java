@@ -6,6 +6,7 @@ import com.vn.beta_testing.domain.Campaign;
 import com.vn.beta_testing.domain.User;
 import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.bug_service.DTO.BugReportDTO;
+import com.vn.beta_testing.feature.bug_service.DTO.BugSeverityDailyDTO;
 import com.vn.beta_testing.feature.bug_service.controller.mapper.BugReportMapper;
 import com.vn.beta_testing.feature.bug_service.repository.BugReportRepository;
 import com.vn.beta_testing.util.constant.PriorityEnum;
@@ -155,6 +156,16 @@ public class BugReportService {
         result.setResult(dtoList);
 
         return result;
+    }
+
+    public List<BugSeverityDailyDTO> getBugSeverityDailyStats(Long campaignId) {
+        List<Object[]> results = repository.getBugCountBySeverityAndDate(campaignId);
+        return results.stream()
+                .map(r -> new BugSeverityDailyDTO(
+                        ((java.sql.Date) r[0]).toLocalDate(),
+                        r[1].toString(),
+                        ((Number) r[2]).longValue()))
+                .collect(Collectors.toList());
     }
 
 }

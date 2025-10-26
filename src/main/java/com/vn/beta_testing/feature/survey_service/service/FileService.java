@@ -24,9 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.stream.Collectors;
 
-
-
 import com.vn.beta_testing.domain.Survey;
+import com.vn.beta_testing.domain.User;
+import com.vn.beta_testing.feature.survey_service.DTO.FileDTO;
 import com.vn.beta_testing.feature.survey_service.repository.FileRepository;
 import com.vn.beta_testing.util.SecurityUtil;
 import com.vn.beta_testing.util.error.StorageException;
@@ -46,6 +46,23 @@ public class FileService {
         this.fileRepository = fileRepository;
     }
 
+    private FileDTO toDTO(com.vn.beta_testing.domain.File file) {
+        FileDTO dto = new FileDTO();
+        dto.setFileId(file.getFileId());
+        dto.setFileName(file.getFileName());
+        dto.setFileType(file.getFileType());
+        dto.setFileSize(file.getFileSize());
+        dto.setCreatedAt(file.getCreatedAt());
+        dto.setUpdatedAt(file.getUpdatedAt());
+
+        if (file.getUploader() != null) {
+            dto.setUploaderId(file.getUploader().getId());
+            dto.setUploaderName(file.getUploader().getName());
+            dto.setUploaderEmail(file.getUploader().getEmail());
+        }
+        return dto;
+    }
+
     public void createUploadFolder(String folder) throws URISyntaxException {
         URI uri = new URI(folder);
         Path path = Paths.get(uri);
@@ -62,7 +79,8 @@ public class FileService {
         }
     }
 
-    public String store(MultipartFile file, String folder, Survey survey) throws URISyntaxException, IOException {
+    public String store(MultipartFile file, String folder, Survey survey, User uploaderUser)
+            throws URISyntaxException, IOException {
         // create unique filename
         String finalName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
         URI uri = new URI(baseURI + folder + "/" + finalName);
@@ -76,6 +94,7 @@ public class FileService {
         newFile.setFileType(file.getContentType());
         newFile.setFileSize(file.getSize());
         newFile.setSurvey(survey);
+        newFile.setUploader(uploaderUser);
         newFile.setCreatedAt(Instant.now());
         newFile.setCreatedBy(SecurityUtil.getCurrentUserLogin().orElse(""));
 
@@ -156,6 +175,11 @@ public class FileService {
             return null;
         }
         return files;
+    }
+
+    public List<FileDTO> getFileDTOsBySurveyId(Long surveyId) {
+        List<com.vn.beta_testing.domain.File> files = fileRepository.findBySurvey_SurveyId(surveyId);
+        return files.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Transactional

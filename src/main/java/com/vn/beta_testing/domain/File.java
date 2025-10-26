@@ -7,6 +7,7 @@ import com.vn.beta_testing.util.SecurityUtil;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,6 +44,10 @@ public class File {
     @JsonIgnore
     @JoinColumn(name = "survey_id")
     private Survey survey;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uploader_id")
+    private User uploader;
 
     @PrePersist
     public void handleBeforeCreate() {
