@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.vn.beta_testing.domain.UserProfile;
+import com.vn.beta_testing.feature.auth_service.DTO.UserProfileDTO;
 import com.vn.beta_testing.feature.auth_service.service.ProfileService;
 import com.vn.beta_testing.util.annotation.ApiMessage;
 
@@ -20,16 +21,16 @@ public class ProfileController {
 
     @GetMapping("/{userId}")
     @ApiMessage("Get user profile by user ID")
-    public ResponseEntity<UserProfile> getProfileByUserId(@PathVariable("userId") Long userId) {
+    public ResponseEntity<UserProfileDTO> getProfileByUserId(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(profileService.getProfileByUserId(userId));
     }
 
     @PostMapping("/{userId}")
     @ApiMessage("Create or update user profile")
-    public ResponseEntity<UserProfile> saveOrUpdateProfile(
-            @PathVariable("userId") Long userId,
+    public ResponseEntity<UserProfileDTO> saveOrUpdateProfile(
+            @PathVariable Long userId,
             @RequestBody UserProfile profileData) {
-        UserProfile saved = profileService.saveOrUpdateProfile(userId, profileData);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(profileService.saveOrUpdateProfile(userId, profileData));
     }
 }

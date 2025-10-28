@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vn.beta_testing.domain.UserProfile;
+import com.vn.beta_testing.feature.auth_service.DTO.UserProfileDTO;
+import com.vn.beta_testing.feature.auth_service.mapper.ProfileMapper;
 import com.vn.beta_testing.feature.auth_service.repository.ProfileRepository;
 import com.vn.beta_testing.feature.auth_service.repository.UserRepository;
 
@@ -21,17 +23,16 @@ public class ProfileService {
         this.userRepository = userRepository;
     }
 
-    public UserProfile getProfileByUserId(Long userId) {
-        return Optional.ofNullable(profileRepository.findByUserId(userId))
+    public UserProfileDTO getProfileByUserId(Long userId) {
+        var profile = Optional.ofNullable(profileRepository.findByUserId(userId))
                 .orElseThrow(() -> new RuntimeException("Profile not found for userId = " + userId));
+        return ProfileMapper.toDTO(profile);
     }
 
-    public UserProfile saveOrUpdateProfile(Long userId, UserProfile profileData) {
-        // Kiểm tra user tồn tại
+    public UserProfileDTO saveOrUpdateProfile(Long userId, UserProfile profileData) {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id = " + userId));
 
-        // Nếu đã có profile thì cập nhật
         UserProfile existing = profileRepository.findByUserId(userId);
         if (existing != null) {
             existing.setBirthYear(profileData.getBirthYear());
@@ -51,11 +52,10 @@ public class ProfileService {
             existing.setTablet(profileData.getTablet());
             existing.setOtherDevice(profileData.getOtherDevice());
             existing.setGender(profileData.getGender());
-            return profileRepository.save(existing);
+            return ProfileMapper.toDTO(profileRepository.save(existing));
         }
 
-        // Nếu chưa có thì tạo mới
         profileData.setUser(user);
-        return profileRepository.save(profileData);
+        return ProfileMapper.toDTO(profileRepository.save(profileData));
     }
 }
