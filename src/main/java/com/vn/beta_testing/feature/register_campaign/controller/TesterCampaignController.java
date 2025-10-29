@@ -12,6 +12,9 @@ import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.register_campaign.DTO.response.CompletionDailyDTO;
 import com.vn.beta_testing.feature.register_campaign.DTO.response.TesterCampaignDTO;
 import com.vn.beta_testing.feature.register_campaign.DTO.response.TesterCampaignStatsDTO;
+import com.vn.beta_testing.feature.register_campaign.DTO.response.TesterStatisticDTO;
+import com.vn.beta_testing.feature.register_campaign.repository.TesterCampaignRepository;
+import com.vn.beta_testing.feature.register_campaign.service.TesterAnalyticsService;
 import com.vn.beta_testing.feature.register_campaign.service.TesterCampaignService;
 import com.vn.beta_testing.util.annotation.ApiMessage;
 
@@ -23,9 +26,14 @@ import java.util.Map;
 public class TesterCampaignController {
 
     private final TesterCampaignService testerCampaignService;
+    private final TesterCampaignRepository testerCampaignRepository;
+    private final TesterAnalyticsService analyticsService;
 
-    public TesterCampaignController(TesterCampaignService testerCampaignService) {
+    public TesterCampaignController(TesterCampaignService testerCampaignService,
+            TesterCampaignRepository testerCampaignRepository, TesterAnalyticsService analyticsService) {
         this.testerCampaignService = testerCampaignService;
+        this.testerCampaignRepository = testerCampaignRepository;
+        this.analyticsService = analyticsService;
     }
 
     @GetMapping("/campaign/{campaignId}/testers")
@@ -147,5 +155,10 @@ public class TesterCampaignController {
     @GetMapping("/campaign/{campaignId}/completion")
     public ResponseEntity<List<CompletionDailyDTO>> getCompletionStats(@PathVariable("campaignId") Long campaignId) {
         return ResponseEntity.ok(testerCampaignService.getCompletionStats(campaignId));
+    }
+
+    @GetMapping("/campaign/{campaignId}/analytics")
+    public ResponseEntity<List<TesterStatisticDTO>> getTesterStats(@PathVariable("campaignId") Long campaignId) {
+        return ResponseEntity.ok(analyticsService.getTesterStatistics(campaignId));
     }
 }

@@ -21,4 +21,13 @@ public interface TesterSurveyRepository extends JpaRepository<TesterSurvey, Long
             "JOIN FETCH ts.response r " +
             "WHERE r.responseId = :responseId")
     Optional<TesterSurvey> findByResponseId(@Param("responseId") Long responseId);
+
+    @Query("""
+                SELECT COUNT(ts)
+                FROM TesterSurvey ts
+                WHERE ts.user.name = :name
+                AND ts.survey.campaign.id = :campaignId
+                AND ts.completed = true
+            """)
+    int countByNameAndCampaignId(@Param("name") String name, @Param("campaignId") Long campaignId);
 }

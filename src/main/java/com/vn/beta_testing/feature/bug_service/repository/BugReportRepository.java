@@ -28,4 +28,12 @@ public interface BugReportRepository extends JpaRepository<BugReport, Long>, Jpa
                 ORDER BY DATE(b.createdAt)
             """)
     List<Object[]> getBugCountBySeverityAndDate(@Param("campaignId") Long campaignId);
+
+    @Query("""
+                SELECT COUNT(b)
+                FROM BugReport b
+                WHERE b.createdBy = :name
+                AND b.campaign.id = :campaignId
+            """)
+    Long countByCreatedByAndCampaignId(@Param("name") String name, @Param("campaignId") Long campaignId);
 }
