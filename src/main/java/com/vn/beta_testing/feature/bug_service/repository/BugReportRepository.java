@@ -1,5 +1,6 @@
 package com.vn.beta_testing.feature.bug_service.repository;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,4 +37,14 @@ public interface BugReportRepository extends JpaRepository<BugReport, Long>, Jpa
                 AND b.campaign.id = :campaignId
             """)
     Long countByCreatedByAndCampaignId(@Param("name") String name, @Param("campaignId") Long campaignId);
+
+    @Query("SELECT MONTH(b.createdAt) AS month, COUNT(b) AS total "
+            + "FROM BugReport b WHERE b.tester.id = :userId "
+            + "AND b.createdAt >= :fromDate "
+            + "GROUP BY MONTH(b.createdAt) ORDER BY MONTH(b.createdAt)")
+    List<Object[]> countBugsByMonth(@Param("userId") Long userId, @Param("fromDate") Instant fromDate);
+
+    @Query("SELECT COUNT(b) FROM BugReport b WHERE b.tester.id = :userId")
+    Long countBugByUserId(@Param("userId") Long userId);
+
 }

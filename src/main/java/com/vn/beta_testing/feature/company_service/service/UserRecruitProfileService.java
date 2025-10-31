@@ -1,5 +1,8 @@
 package com.vn.beta_testing.feature.company_service.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -8,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.vn.beta_testing.domain.UserRecruitProfile;
 import com.vn.beta_testing.domain.Campaign;
 import com.vn.beta_testing.domain.response.ResultPaginationDTO;
+import com.vn.beta_testing.feature.company_service.DTO.UserRecruitProfileDTO;
+import com.vn.beta_testing.feature.company_service.mapDTO.UserRecruitProfileMapper;
 import com.vn.beta_testing.feature.company_service.repository.UserRecruitProfileRepository;
 import com.vn.beta_testing.util.error.IdInvalidException;
 
@@ -16,11 +21,13 @@ public class UserRecruitProfileService {
 
     private final UserRecruitProfileRepository userRecruitProfileRepository;
     private final CampaignService campaignService;
+    private final UserRecruitProfileMapper userRecruitProfileMapper;
 
     public UserRecruitProfileService(UserRecruitProfileRepository userRecruitProfileRepository,
-            CampaignService campaignService) {
+            CampaignService campaignService, UserRecruitProfileMapper userRecruitProfileMapper) {
         this.userRecruitProfileRepository = userRecruitProfileRepository;
         this.campaignService = campaignService;
+        this.userRecruitProfileMapper = userRecruitProfileMapper;
     }
 
     public UserRecruitProfile fetchById(Long id) {
@@ -95,5 +102,12 @@ public class UserRecruitProfileService {
             throw new IdInvalidException("UserRecruitProfile with id = " + id + " does not exist.");
         }
         this.userRecruitProfileRepository.delete(existing);
+    }
+
+      public List<UserRecruitProfileDTO> getAll() {
+        List<UserRecruitProfile> list = userRecruitProfileRepository.findAll();
+        return list.stream()
+                .map(userRecruitProfileMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }

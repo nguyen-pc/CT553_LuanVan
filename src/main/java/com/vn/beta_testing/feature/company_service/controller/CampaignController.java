@@ -124,4 +124,60 @@ public class CampaignController {
         return ResponseEntity.ok(updated);
     }
 
+    @GetMapping("/campaigns/active-approved")
+    @ApiMessage("Get all approved campaigns that have not ended yet")
+    public ResponseEntity<ResultPaginationDTO> getApprovedAndActiveCampaigns(
+            @Filter Specification<Campaign> spec,
+            Pageable pageable) {
+
+        // Trạng thái phải là APPROVED
+        Specification<Campaign> approvedSpec = (root, query, cb) -> cb.equal(root.get("campaignStatus"),
+                CampaignStatus.APPROVED);
+
+        // endDate > hiện tại
+        Specification<Campaign> notEndedSpec = (root, query, cb) -> cb.greaterThan(root.get("endDate"),
+                java.time.Instant.now());
+
+        // Không phải draft
+        Specification<Campaign> notDraftSpec = (root, query, cb) -> cb.isFalse(root.get("isDraft"));
+
+        // Kết hợp tất cả các điều kiện
+        Specification<Campaign> finalSpec = Specification
+                .where(approvedSpec)
+                .and(notEndedSpec)
+                .and(notDraftSpec)
+                .and(spec);
+
+        ResultPaginationDTO result = campaignService.fetchAll(finalSpec, pageable);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/campaigns/upcoming")
+    @ApiMessage("Get all upcoming campaigns that have not started yet")
+    public ResponseEntity<ResultPaginationDTO> getUpcomingCampaigns(
+            @Filter Specification<Campaign> spec,
+            Pageable pageable) {
+
+        // Trạng thái đã được duyệt
+        Specification<Campaign> approvedSpec = (root, query, cb) -> cb.equal(root.get("campaignStatus"),
+                CampaignStatus.APPROVED);
+
+        // startDate > hiện tại → chưa bắt đầu
+        Specification<Campaign> upcomingSpec = (root, query, cb) -> cb.greaterThan(root.get("startDate"),
+                java.time.Instant.now());
+
+        // Không phải bản nháp
+        Specification<Campaign> notDraftSpec = (root, query, cb) -> cb.isFalse(root.get("isDraft"));
+
+        // Gộp điều kiện
+        Specification<Campaign> finalSpec = Specification
+                .where(approvedSpec)
+                .and(upcomingSpec)
+                .and(notDraftSpec)
+                .and(spec);
+
+        ResultPaginationDTO result = campaignService.fetchAll(finalSpec, pageable);
+        return ResponseEntity.ok(result);
+    }
+
 }

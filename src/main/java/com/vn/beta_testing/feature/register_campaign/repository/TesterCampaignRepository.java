@@ -10,6 +10,7 @@ import com.vn.beta_testing.domain.TesterCampaign;
 import com.vn.beta_testing.feature.register_campaign.DTO.response.TesterStatisticDTO;
 import com.vn.beta_testing.util.constant.TesterCampaignStatus;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,5 +59,14 @@ public interface TesterCampaignRepository
           GROUP BY u.id, c.id, tc.id, u.name, c.rewardValue, tc.progress
       """)
   List<TesterStatisticDTO> getTesterBasicStats(@Param("campaignId") Long campaignId);
+
+  @Query("SELECT MONTH(tc.joinDate) AS month, COUNT(tc) AS total "
+      + "FROM TesterCampaign tc WHERE tc.user.id = :userId "
+      + "AND tc.joinDate >= :fromDate "
+      + "GROUP BY MONTH(tc.joinDate) ORDER BY MONTH(tc.joinDate)")
+  List<Object[]> countCampaignsByMonth(@Param("userId") Long userId, @Param("fromDate") Instant fromDate);
+
+  @Query("SELECT COUNT(tc) FROM TesterCampaign tc WHERE tc.user.id = :userId AND tc.status = 'APPROVED'")
+  Long countByUserId(@Param("userId") Long userId);
 
 }

@@ -1,5 +1,7 @@
     package com.vn.beta_testing.feature.company_service.controller;
 
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import com.turkraft.springfilter.boot.Filter;
 import com.vn.beta_testing.domain.UserRecruitProfile;
 import com.vn.beta_testing.domain.response.ResultPaginationDTO;
+import com.vn.beta_testing.feature.company_service.DTO.UserRecruitProfileDTO;
 import com.vn.beta_testing.feature.company_service.mapDTO.UserRecruitProfileResponse;
 import com.vn.beta_testing.feature.company_service.service.UserRecruitProfileService;
 import com.vn.beta_testing.util.annotation.ApiMessage;
@@ -26,12 +29,21 @@ public class UserRecruitProfileController {
     }
 
     // Lấy tất cả profiles
-    @GetMapping("/recruit-profiles")
+    // @GetMapping("/recruit-profile")
+    // @ApiMessage("Get all recruit profiles")
+    // public ResponseEntity<ResultPaginationDTO> getAllProfiles(
+    //         @Filter Specification<UserRecruitProfile> spec,
+    //         Pageable pageable) {
+    //     return ResponseEntity.ok(this.userRecruitProfileService.fetchAll(spec, pageable));
+    // }
+
+    
+    @GetMapping("/recruit-profile")
     @ApiMessage("Get all recruit profiles")
-    public ResponseEntity<ResultPaginationDTO> getAllProfiles(
+    public ResponseEntity<List<UserRecruitProfileDTO>> getAllProfiles(
             @Filter Specification<UserRecruitProfile> spec,
             Pageable pageable) {
-        return ResponseEntity.ok(this.userRecruitProfileService.fetchAll(spec, pageable));
+        return ResponseEntity.ok(this.userRecruitProfileService.getAll());
     }
 
     // Lấy profile theo id

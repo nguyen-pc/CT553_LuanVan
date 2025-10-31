@@ -1,5 +1,6 @@
 package com.vn.beta_testing.feature.test_execution.repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,4 +31,13 @@ public interface TesterSurveyRepository extends JpaRepository<TesterSurvey, Long
                 AND ts.completed = true
             """)
     int countByNameAndCampaignId(@Param("name") String name, @Param("campaignId") Long campaignId);
+
+    @Query("SELECT MONTH(ts.completionDate) AS month, COUNT(ts) AS total "
+            + "FROM TesterSurvey ts WHERE ts.user.id = :userId "
+            + "AND ts.completionDate >= :fromDate "
+            + "GROUP BY MONTH(ts.completionDate) ORDER BY MONTH(ts.completionDate)")
+    List<Object[]> countSurveysByMonth(@Param("userId") Long userId, @Param("fromDate") Instant fromDate);
+
+    @Query("SELECT COUNT(ts) FROM TesterSurvey ts WHERE ts.user.id = :userId AND ts.completed = TRUE")
+    Long countCompletedSurvey(@Param("userId") Long userId);
 }
