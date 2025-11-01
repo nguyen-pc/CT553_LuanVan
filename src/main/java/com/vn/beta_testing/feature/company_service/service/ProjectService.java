@@ -62,6 +62,7 @@ public class ProjectService {
         }
         existingProject.setProjectName(project.getProjectName());
         existingProject.setDescription(project.getDescription());
+        existingProject.setBannerUrl(project.getBannerUrl());
         existingProject.setStatus(project.isStatus());
         existingProject.setStartDate(project.getStartDate());
         existingProject.setEndDate(project.getEndDate());

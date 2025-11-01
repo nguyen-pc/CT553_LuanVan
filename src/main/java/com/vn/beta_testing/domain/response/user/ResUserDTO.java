@@ -18,8 +18,9 @@ public class ResUserDTO {
     private String email;
     private String name;
     private GenderEnum gender;
+    private String phoneNumber;
     private String address;
-    private int age;
+    // private int age;
     private Instant updatedAt;
     private Instant createdAt;
 

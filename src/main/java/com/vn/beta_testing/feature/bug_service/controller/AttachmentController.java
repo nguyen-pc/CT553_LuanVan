@@ -90,6 +90,34 @@ public class AttachmentController {
 
     }
 
+    @PostMapping("/attachment/single")
+    @ApiMessage("Upload single file")
+    public ResponseEntity<ResUploadFileDTO> upload(@RequestParam(name = "file", required = false) MultipartFile file,
+            @RequestParam("folder") String folder) throws URISyntaxException, IOException, StorageException {
+
+        // skip validate
+        if (file == null || file.isEmpty()) {
+            throw new StorageException("File is empty. Please upload a file");
+        }
+
+        // create a directory if not exist
+        this.attachmentService.createUploadFolder(baseURI + folder);
+
+        String fileName = file.getOriginalFilename();
+        List<String> allowedExtensions = Arrays.asList("pdf", "jpg", "jpeg", "png", "doc", "docx");
+        boolean isValid = allowedExtensions.stream().anyMatch(item -> fileName.toLowerCase().endsWith(item));
+
+        if (!isValid) {
+            throw new StorageException("Invalid file extension. Only allow" + allowedExtensions);
+        }
+        // store file
+        String uploadFile = this.attachmentService.storeSingle(file, folder);
+
+        ResUploadFileDTO res = new ResUploadFileDTO(uploadFile, Instant.now());
+
+        return ResponseEntity.ok().body(res);
+    }
+
     @GetMapping("/attachment")
     public ResponseEntity<Resource> download(@RequestParam(name = "folder", required = false) String folder,
             @RequestParam(name = "fileName", required = false) String fileName)

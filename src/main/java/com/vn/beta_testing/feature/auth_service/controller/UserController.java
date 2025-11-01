@@ -75,13 +75,15 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     @ApiMessage("fetch user by id")
-    public ResponseEntity<User> getUserById(@PathVariable("id") long id) throws IdInvalidException {
+    public ResponseEntity<ResUserDTO> getUserById(@PathVariable("id") long id) throws IdInvalidException {
 
         User fetchUser = this.userService.fetchUserById(id);
         if (fetchUser == null) {
             throw new IdInvalidException("User voi id = " + id + "khong ton tai");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(fetchUser);
+
+        ResUserDTO dto = this.userService.convertToResUserDTO(fetchUser);
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
     @GetMapping("/users")
@@ -127,5 +129,12 @@ public class UserController {
         }
 
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/users/latest")
+    @ApiMessage("Get top 10 newest users")
+    public ResponseEntity<List<ResUserDTO>> getTop10NewestUsers() {
+        List<ResUserDTO> newestUsers = userService.fetchTop10NewestUsers();
+        return ResponseEntity.ok(newestUsers);
     }
 }

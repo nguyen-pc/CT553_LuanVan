@@ -88,6 +88,19 @@ public class AttachmentService {
         return finalName;
     }
 
+    public String storeSingle(MultipartFile file, String folder) throws URISyntaxException,
+            IOException {
+        // create unique filename
+        String finalName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
+        URI uri = new URI(baseURI + folder + "/" + finalName);
+        Path path = Paths.get(uri);
+        try (InputStream inputStream = file.getInputStream()) {
+            Files.copy(inputStream, path,
+                    StandardCopyOption.REPLACE_EXISTING);
+        }
+        return finalName;
+    }
+
     public long getFileLength(String fileName, String folder) throws URISyntaxException {
         URI uri = new URI(baseURI + folder + "/" + fileName);
         Path path = Paths.get(uri);

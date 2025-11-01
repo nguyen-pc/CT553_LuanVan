@@ -82,12 +82,12 @@ public class CompanyProfile {
     //     this.createdAt = Instant.now();
     // }
 
-    // @PreUpdate
-    // public void handleBeforeUpdate() {
-    //     this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-    //             ? SecurityUtil.getCurrentUserLogin().get()
-    //             : "";
+    @PreUpdate
+    public void handleBeforeUpdate() {
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
 
-    //     this.updatedAt = Instant.now();
-    // }
+        this.updatedAt = Instant.now();
+    }
 }

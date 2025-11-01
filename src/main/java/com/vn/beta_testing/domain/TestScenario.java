@@ -43,7 +43,11 @@ public class TestScenario {
     private long id;
 
     private String title;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
+    
+    @Column(columnDefinition = "TEXT")
     private String precondition;
 
     @ManyToOne

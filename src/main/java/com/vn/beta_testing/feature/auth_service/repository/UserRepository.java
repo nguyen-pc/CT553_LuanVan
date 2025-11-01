@@ -24,4 +24,30 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("SELECT u.companyProfile FROM User u WHERE u.id = :userId")
     CompanyProfile findCompanyByUserId(@Param("userId") Long userId);
 
+    // Admin Dashboard Queries
+
+    @Query(value = "SELECT COUNT(*) FROM users", nativeQuery = true)
+    long countAllUsers();
+
+    @Query(value = "SELECT COUNT(*) FROM users WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)", nativeQuery = true)
+    long countUsersLast30Days();
+
+    @Query(value = """
+            SELECT COUNT(*) FROM users
+            WHERE created_at BETWEEN DATE_SUB(CURDATE(), INTERVAL 60 DAY) AND DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+            """, nativeQuery = true)
+    long countUsersPrev30Days();
+
+    @Query(value = """
+                SELECT DATE(created_at) AS date, COUNT(*) AS count
+                FROM users
+                WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                GROUP BY DATE(created_at)
+                ORDER BY DATE(created_at)
+            """, nativeQuery = true)
+    List<Object[]> findUserTrendLast30Days();
+
+    @Query(value = "SELECT * FROM users ORDER BY created_at DESC LIMIT 10", nativeQuery = true)
+    List<User> findTop10NewestUsers();
+
 }

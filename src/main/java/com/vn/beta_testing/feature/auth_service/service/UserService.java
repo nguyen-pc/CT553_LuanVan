@@ -53,7 +53,7 @@ public class UserService {
         User currentUser = this.fetchUserById(reqUser.getId());
         if (currentUser != null) {
             currentUser.setAddress(reqUser.getAddress());
-            // currentUser.setGender(reqUser.getGender());
+            currentUser.setGender(reqUser.getGender());
             // currentUser.setAge(reqUser.getAge());
             currentUser.setName(reqUser.getName());
             currentUser.setPhoneNumber(reqUser.getPhoneNumber());
@@ -161,9 +161,10 @@ public class UserService {
         res.setEmail(user.getEmail());
         res.setName(user.getName());
         res.setAddress(user.getAddress());
+        res.setPhoneNumber(user.getPhoneNumber());
         // res.setAge(user.getAge());
         res.setCreatedAt(user.getCreatedAt());
-        // res.setGender(user.getGender());
+        res.setGender(user.getGender());
         res.setUpdatedAt(user.getUpdatedAt());
         return res;
     }
@@ -195,6 +196,14 @@ public class UserService {
 
         return res;
 
+    }
+
+    public List<ResUserDTO> fetchTop10NewestUsers() {
+        List<User> newestUsers = userRepository.findTop10NewestUsers();
+
+        return newestUsers.stream()
+                .map(this::convertToResUserDTO)
+                .collect(Collectors.toList());
     }
 
     public void updateUserToken(String token, String email) {

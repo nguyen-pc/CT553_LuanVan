@@ -9,6 +9,7 @@ import com.vn.beta_testing.util.SecurityUtil;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -35,6 +36,7 @@ public class Survey {
     @NotBlank(message = "Survey name is required")
     private String surveyName;
     private String subTitle;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private Instant startDate;
     private Instant endDate;

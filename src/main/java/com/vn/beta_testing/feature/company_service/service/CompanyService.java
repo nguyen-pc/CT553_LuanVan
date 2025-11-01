@@ -81,9 +81,17 @@ public class CompanyService {
     }
 
     public CompanyDTO fetchCompanyByUserId(Long userId) {
-    CompanyProfile company = userRepository.findCompanyByUserId(userId);
-    if (company == null) return null;
-    return toDTO(company);
-}
+        CompanyProfile company = userRepository.findCompanyByUserId(userId);
+        if (company == null)
+            return null;
+        return toDTO(company);
+    }
+
+    public List<CompanyDTO> fetchTop10NewestCompanies() {
+        List<CompanyProfile> latestCompanies = companyRepository.findTop10NewestCompanies();
+        return latestCompanies.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
 
 }

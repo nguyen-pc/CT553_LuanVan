@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.vn.beta_testing.util.SecurityUtil;
+import com.vn.beta_testing.util.constant.BatchStatus;
 import com.vn.beta_testing.util.constant.GenderEnum;
 
 import jakarta.persistence.CascadeType;
@@ -51,6 +52,9 @@ public class User {
 
     @NotBlank(message = "password không được để trống")
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private GenderEnum gender = GenderEnum.MALE;
 
     private String address;
     private String phoneNumber;

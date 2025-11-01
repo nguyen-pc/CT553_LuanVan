@@ -50,6 +50,8 @@ public class Project {
     private Date startDate;
     private Date endDate;
 
+    private String bannerUrl;
+
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "company_id")

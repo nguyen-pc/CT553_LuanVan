@@ -110,4 +110,11 @@ public class CompanyController {
 
         return ResponseEntity.ok(companyDTO);
     }
+
+    @GetMapping("/company/latest")
+    @ApiMessage("Get top 10 newest companies")
+    public ResponseEntity<List<CompanyDTO>> getTop10NewestCompanies() {
+        List<CompanyDTO> latestCompanies = this.companyService.fetchTop10NewestCompanies();
+        return ResponseEntity.ok(latestCompanies);
+    }
 }

@@ -40,10 +40,15 @@ public class TestCase {
     private long id;
 
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String description;
+    @Column(columnDefinition = "TEXT")
     private String preCondition;
+    @Column(columnDefinition = "TEXT")
     private String dataTest;
+    @Column(columnDefinition = "TEXT")
     private String steps;
+    @Column(columnDefinition = "TEXT")
     private String expectedResult;
     private String priority;
 
