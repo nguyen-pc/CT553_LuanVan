@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vn.beta_testing.domain.Attachment;
+import com.vn.beta_testing.domain.BugReport;
 import com.vn.beta_testing.domain.Campaign;
 import com.vn.beta_testing.domain.File;
 import com.vn.beta_testing.domain.Survey;
@@ -31,6 +32,7 @@ import com.vn.beta_testing.domain.response.file.ResUploadFileDTO;
 import com.vn.beta_testing.feature.auth_service.service.UserService;
 import com.vn.beta_testing.feature.bug_service.DTO.AttachmentDTO;
 import com.vn.beta_testing.feature.bug_service.service.AttachmentService;
+import com.vn.beta_testing.feature.bug_service.service.BugReportService;
 import com.vn.beta_testing.feature.company_service.service.CampaignService;
 import com.vn.beta_testing.feature.survey_service.service.FileService;
 import com.vn.beta_testing.feature.survey_service.service.SurveyService;
@@ -43,6 +45,7 @@ public class AttachmentController {
     private final AttachmentService attachmentService;
     private final CampaignService campaignService;
     private final UserService userService;
+    private final BugReportService bugReportService;
 
     @Value("${beta_testing.upload-file.base-uri}")
     private String baseURI;
@@ -51,10 +54,11 @@ public class AttachmentController {
     private String baseURL;
 
     public AttachmentController(AttachmentService attachmentService, CampaignService campaignService,
-            UserService userService) {
+            UserService userService, BugReportService bugReportService) {
         this.attachmentService = attachmentService;
         this.campaignService = campaignService;
         this.userService = userService;
+        this.bugReportService = bugReportService;
     }
 
     @PostMapping("/attachment")
@@ -88,6 +92,45 @@ public class AttachmentController {
         ResUploadFileDTO res = new ResUploadFileDTO(uploadFile, Instant.now());
         return ResponseEntity.ok().body(res);
 
+    }
+
+    @PostMapping("/attachment/bug")
+    @ApiMessage("Upload attachment for Bug Report")
+    public ResponseEntity<ResUploadFileDTO> uploadAttachment(
+            @RequestParam(name = "file", required = false) MultipartFile file,
+            @RequestParam("bugId") String bugId,
+            @RequestParam("uploader") String uploader)
+            throws URISyntaxException, IOException, StorageException {
+
+        if (file == null || file.isEmpty()) {
+            throw new StorageException("File is empty. Please upload a file");
+        }
+
+        Long bugReportId = Long.parseLong(bugId);
+        Long uploaderId = Long.parseLong(uploader);
+
+        BugReport bug = bugReportService.fetchBugById(bugReportId);
+        if (bug == null) {
+            throw new StorageException("Bug report not found with id = " + bugId);
+        }
+
+        User uploaderUser = userService.fetchUserById(uploaderId);
+
+        String folderName = "attachment";
+        this.attachmentService.createUploadFolder(baseURI + folderName);
+
+        String fileName = file.getOriginalFilename();
+        List<String> allowedExtensions = Arrays.asList("pdf", "jpg", "jpeg", "png", "doc", "docx", "mp4", "mp3",
+                "webm");
+        boolean isValid = allowedExtensions.stream().anyMatch(item -> fileName.toLowerCase().endsWith(item));
+        if (!isValid) {
+            throw new StorageException("Invalid file extension. Only allow " + allowedExtensions);
+        }
+
+        String storedFileName = this.attachmentService.storeBug(file, folderName, bug, uploaderUser);
+
+        ResUploadFileDTO response = new ResUploadFileDTO(storedFileName, Instant.now());
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/attachment/single")
@@ -183,5 +226,12 @@ public class AttachmentController {
 
         List<AttachmentDTO> videoFiles = attachmentService.getVideoFilesByCampaignId(campaignId);
         return ResponseEntity.ok(videoFiles);
+    }
+
+    @GetMapping("/attachment/bug/{bugId}")
+    @ApiMessage("Get all attachments by Bug Report ID")
+    public ResponseEntity<List<AttachmentDTO>> getAttachmentsByBugId(@PathVariable("bugId") Long bugId) {
+        List<AttachmentDTO> files = attachmentService.getAttachmentsByBugId(bugId);
+        return ResponseEntity.ok(files);
     }
 }

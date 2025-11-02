@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.stream.Collectors;
 
 import com.vn.beta_testing.domain.Attachment;
+import com.vn.beta_testing.domain.BugReport;
 import com.vn.beta_testing.domain.Campaign;
 import com.vn.beta_testing.domain.Survey;
 import com.vn.beta_testing.domain.User;
@@ -81,6 +82,28 @@ public class AttachmentService {
         newFile.setFileType(file.getContentType());
         newFile.setFileSize(file.getSize());
         newFile.setCampaign(campaign);
+        newFile.setUploader(uploader);
+        newFile.setCreatedBy(SecurityUtil.getCurrentUserLogin().orElse(""));
+
+        attachmentRepository.save(newFile);
+        return finalName;
+    }
+
+    public String storeBug(MultipartFile file, String folder, BugReport bug, User uploader)
+            throws URISyntaxException, IOException {
+        // create unique filename
+        String finalName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
+        URI uri = new URI(baseURI + folder + "/" + finalName);
+        Path path = Paths.get(uri);
+        try (InputStream inputStream = file.getInputStream()) {
+            Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
+        }
+        // Lưu vào database
+        Attachment newFile = new Attachment();
+        newFile.setFileName(finalName);
+        newFile.setFileType(file.getContentType());
+        newFile.setFileSize(file.getSize());
+        newFile.setBugReport(bug);
         newFile.setUploader(uploader);
         newFile.setCreatedBy(SecurityUtil.getCurrentUserLogin().orElse(""));
 
@@ -214,6 +237,11 @@ public class AttachmentService {
         // .collect(Collectors.toList());
 
         return files.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    public List<AttachmentDTO> getAttachmentsByBugId(Long bugId) {
+        List<Attachment> attachments = attachmentRepository.findByBugReport_Id(bugId);
+        return attachments.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Transactional

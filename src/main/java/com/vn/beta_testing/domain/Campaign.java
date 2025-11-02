@@ -57,6 +57,7 @@ public class Campaign {
     private String status; // Enum
     private String rewardType;
     private String rewardValue;
+    private String bannerUrl;
 
     private boolean isDraft = true;
 

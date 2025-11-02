@@ -50,6 +50,11 @@ public class BugReportService {
                 .orElseThrow(() -> new RuntimeException("BugReport not found with id: " + id));
     }
 
+    public BugReport fetchBugById(Long id) {
+        return repository.findById(id)
+                .orElse(null);
+    }
+
     public void delete(Long id) {
         repository.deleteById(id);
     }

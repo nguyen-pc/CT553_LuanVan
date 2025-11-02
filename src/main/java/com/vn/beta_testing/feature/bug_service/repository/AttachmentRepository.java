@@ -15,6 +15,8 @@ public interface AttachmentRepository extends JpaRepository<Attachment, Long>,
     // List<Attachment> findBySurvey_SurveyId(Long surveyId);
     List<Attachment> findByCampaign_Id(Long campaignId);
 
+    List<Attachment> findByBugReport_Id(Long bugId);
+
     Optional<Attachment> findByFileName(String fileName);
 
     List<Attachment> findByCampaign_IdAndFileTypeIn(Long campaignId, List<String> fileTypes);
