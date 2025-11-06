@@ -1,26 +1,34 @@
 package com.vn.beta_testing.domain;
 
+import jakarta.persistence.*;
+import lombok.*;
 import java.time.Instant;
 
-import com.vn.beta_testing.util.constant.NotificationEnum;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
+@Entity
+@Table(name = "notifications")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Notification {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    private NotificationEnum type;
+    private Long userId;
+
     private String title;
-    
+
     @Column(columnDefinition = "TEXT")
-    private String content;
+    private String message;
 
-    private boolean isRead = false;
+    private String type; 
 
-    private Instant createdAt;
+    private String link;
+
+    private Boolean isRead = false;
+
+    private Instant createdAt = Instant.now();
 }
