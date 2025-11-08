@@ -22,7 +22,7 @@ public class PermissionInterceptorConfiguration implements WebMvcConfigurer {
                 "/api/v1/testscenario/**",
                 "/api/v1/recruit-profile/**",
                 "/api/v1/user/**",
-                 "/api/v1/users/**",
+                "/api/v1/users/**",
                 "/api/v1/test-execution/**",
                 "/api/v1/bugs/**",
                 "/ws/**",
@@ -35,6 +35,8 @@ public class PermissionInterceptorConfiguration implements WebMvcConfigurer {
                 "/api/v1/recommend/**",
                 "/api/v1/admin/**",
                 "/api/v1/project-users/**",
+                "/api/v1/notifications/**",
+                "/api/v1/dashboard/**"
 
                 // "/api/v1/companies/**", "/api/v1/jobs/**", "/api/v1/skills", "/api/v1/files",
                 // "/api/v1/resumes/**", "/api/v1/subscribers/**",

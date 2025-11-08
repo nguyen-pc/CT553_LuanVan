@@ -9,6 +9,7 @@ import org.checkerframework.checker.units.qual.s;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.vn.beta_testing.domain.CompanyProfile;
@@ -26,11 +27,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final CompanyService companyService;
     private final RoleService roleService;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, CompanyService companyService, RoleService roleService) {
+    public UserService(UserRepository userRepository, CompanyService companyService, RoleService roleService,
+            BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.companyService = companyService;
         this.roleService = roleService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User handleCreateUser(User user) {
@@ -73,6 +77,65 @@ public class UserService {
         currentUser = this.userRepository.save(currentUser);
 
         return currentUser;
+    }
+
+    public User handleUpdateUserNotNull(User reqUser) {
+        System.out.println("Update user: " + reqUser);
+        User currentUser = this.fetchUserById(reqUser.getId());
+        if (currentUser == null) {
+            throw new RuntimeException("User not found with id = " + reqUser.getId());
+        }
+
+        // 🧩 Cập nhật chỉ khi có dữ liệu truyền vào (không null)
+        if (reqUser.getName() != null) {
+            currentUser.setName(reqUser.getName());
+        }
+        if (reqUser.getPhoneNumber() != null) {
+            currentUser.setPhoneNumber(reqUser.getPhoneNumber());
+        }
+        if (reqUser.getAddress() != null) {
+            currentUser.setAddress(reqUser.getAddress());
+        }
+        if (reqUser.getGender() != null) {
+            currentUser.setGender(reqUser.getGender());
+        }
+
+        // 🏢 Cập nhật company nếu có ID
+        if (reqUser.getCompanyProfile() != null && reqUser.getCompanyProfile().getId() != 0) {
+            CompanyProfile company = this.companyService.fetchCompanyById(reqUser.getCompanyProfile().getId());
+            if (company != null) {
+                currentUser.setCompanyProfile(company);
+            }
+        }
+
+        // 👮 Cập nhật role nếu có ID
+        if (reqUser.getRole() != null && reqUser.getRole().getId() != 0) {
+            Role role = this.roleService.fetchById(reqUser.getRole().getId());
+            if (role != null) {
+                currentUser.setRole(role);
+            }
+        }
+
+        // 💾 Lưu lại
+        currentUser = this.userRepository.save(currentUser);
+        return currentUser;
+    }
+
+    public boolean handleChangePassword(Long userId, String oldPassword, String newPassword) {
+        User currentUser = fetchUserById(userId);
+        if (currentUser == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        // ✅ So sánh mật khẩu cũ
+        if (!passwordEncoder.matches(oldPassword, currentUser.getPassword())) {
+            throw new RuntimeException("Old password is incorrect");
+        }
+
+        // ✅ Mã hóa mật khẩu mới và lưu lại
+        currentUser.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(currentUser);
+        return true;
     }
 
     public void handleDeleteUser(long id) {

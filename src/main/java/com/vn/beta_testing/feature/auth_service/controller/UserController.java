@@ -8,6 +8,7 @@ import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.domain.response.user.ResCreateUserDTO;
 import com.vn.beta_testing.domain.response.user.ResUpdateUserDTO;
 import com.vn.beta_testing.domain.response.user.ResUserDTO;
+import com.vn.beta_testing.feature.auth_service.DTO.ReqChangePasswordDTO;
 import com.vn.beta_testing.feature.auth_service.service.UserService;
 import com.vn.beta_testing.util.annotation.ApiMessage;
 import com.vn.beta_testing.util.error.IdInvalidException;
@@ -110,13 +111,29 @@ public class UserController {
     @ApiMessage("Update a user")
     public ResponseEntity<ResUpdateUserDTO> UpdateUser(@RequestBody User user) throws IdInvalidException {
         System.out.println("Update user: " + user);
-        User curUser = this.userService.handleUpdateUser(user);
+        User curUser = this.userService.handleUpdateUserNotNull(user);
 
         if (curUser == null) {
             throw new IdInvalidException("user voi id = " + user.getId() + "Khong ton tai");
         }
 
         return ResponseEntity.ok(this.userService.convertToResUpdateUserDTO(user));
+    }
+
+    @PutMapping("/users/change-password")
+    @ApiMessage("Change user password")
+    public ResponseEntity<String> changePassword(@RequestBody ReqChangePasswordDTO req) {
+        try {
+            boolean success = userService.handleChangePassword(req.getId(), req.getOldPassword(), req.getNewPassword());
+            if (success) {
+                return ResponseEntity.ok("Password updated successfully");
+            }
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest()
+                    .body("Failed to update password: " + ex.getMessage());
+        }
+        return ResponseEntity.internalServerError()
+                .body("Unexpected error");
     }
 
     @GetMapping("/users/company/{companyId}")

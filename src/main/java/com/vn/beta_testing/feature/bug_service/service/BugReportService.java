@@ -63,33 +63,46 @@ public class BugReportService {
         BugReport existing = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("BugReport not found with id: " + id));
 
-        existing.setTitle(dto.getTitle());
-        existing.setDescription(dto.getDescription());
-        existing.setSeverity(dto.getSeverity());
-        existing.setPriority(dto.getPriority());
-        existing.setStatus(dto.getStatus());
-        existing.setStepsToReproduce(dto.getStepsToReproduce());
-        existing.setExpectedResult(dto.getExpectedResult());
-        existing.setActualResult(dto.getActualResult());
+        // 🔹 Chỉ update field nếu DTO có giá trị
+        if (dto.getTitle() != null)
+            existing.setTitle(dto.getTitle());
+        if (dto.getDescription() != null)
+            existing.setDescription(dto.getDescription());
+        if (dto.getSeverity() != null)
+            existing.setSeverity(dto.getSeverity());
+        if (dto.getPriority() != null)
+            existing.setPriority(dto.getPriority());
+        if (dto.getStatus() != null)
+            existing.setStatus(dto.getStatus());
+        if (dto.getStepsToReproduce() != null)
+            existing.setStepsToReproduce(dto.getStepsToReproduce());
+        if (dto.getExpectedResult() != null)
+            existing.setExpectedResult(dto.getExpectedResult());
+        if (dto.getActualResult() != null)
+            existing.setActualResult(dto.getActualResult());
 
+        // 🔹 Update tester (nếu có)
         if (dto.getTesterId() != null) {
             User tester = new User();
             tester.setId(dto.getTesterId());
             existing.setTester(tester);
         }
 
+        // 🔹 Update assignee (nếu có)
         if (dto.getAssigneeId() != null) {
             User assignee = new User();
             assignee.setId(dto.getAssigneeId());
             existing.setAssignee(assignee);
         }
 
+        // 🔹 Update bug type (nếu có)
         if (dto.getBugTypeId() != null) {
             BugType type = new BugType();
             type.setId(dto.getBugTypeId());
             existing.setBugType(type);
         }
 
+        // 🔹 Update campaign (nếu có)
         if (dto.getCampaignId() != null) {
             Campaign campaign = new Campaign();
             campaign.setId(dto.getCampaignId());
