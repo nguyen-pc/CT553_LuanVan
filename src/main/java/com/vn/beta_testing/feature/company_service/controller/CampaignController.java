@@ -16,9 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.turkraft.springfilter.boot.Filter;
 import com.vn.beta_testing.domain.Campaign;
+import com.vn.beta_testing.domain.CompanyProfile;
 import com.vn.beta_testing.domain.Project;
 import com.vn.beta_testing.domain.response.ResultPaginationDTO;
+import com.vn.beta_testing.feature.company_service.DTO.CompanyDTO;
+import com.vn.beta_testing.feature.company_service.DTO.ProjectDTO;
 import com.vn.beta_testing.feature.company_service.service.CampaignService;
+import com.vn.beta_testing.feature.company_service.service.CompanyService;
+import com.vn.beta_testing.feature.company_service.service.ProjectService;
 import com.vn.beta_testing.util.annotation.ApiMessage;
 import com.vn.beta_testing.util.constant.CampaignStatus;
 import com.vn.beta_testing.util.error.IdInvalidException;
@@ -27,9 +32,14 @@ import com.vn.beta_testing.util.error.IdInvalidException;
 @RequestMapping("/api/v1")
 public class CampaignController {
     private final CampaignService campaignService;
+    private final CompanyService companyService;
+    private final ProjectService projectService;
 
-    public CampaignController(CampaignService campaignService) {
+    public CampaignController(CampaignService campaignService, CompanyService companyService,
+            ProjectService projectService) {
         this.campaignService = campaignService;
+        this.companyService = companyService;
+        this.projectService = projectService;
     }
 
     @GetMapping("/project/{projectId}/campaigns")
@@ -178,6 +188,20 @@ public class CampaignController {
 
         ResultPaginationDTO result = campaignService.fetchAll(finalSpec, pageable);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/campaigns/{id}/project")
+    public ResponseEntity<ProjectDTO> getProjectByCampaign(@PathVariable("id") Long id) {
+        Project project = campaignService.getProjectByCampaign(id);
+        ProjectDTO dto = projectService.toDTO(project);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("campaigns/{id}/company")
+    public ResponseEntity<CompanyDTO> getCompany(@PathVariable("id") Long id) {
+        CompanyProfile company = campaignService.getCompanyByCampaign(id);
+        CompanyDTO companyDTO = this.companyService.toDTO(company);
+        return ResponseEntity.ok(companyDTO);
     }
 
 }

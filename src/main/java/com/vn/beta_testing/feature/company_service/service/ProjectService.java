@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.vn.beta_testing.domain.CompanyProfile;
 import com.vn.beta_testing.domain.Project;
 import com.vn.beta_testing.domain.response.ResultPaginationDTO;
+import com.vn.beta_testing.feature.company_service.DTO.ProjectDTO;
 import com.vn.beta_testing.feature.company_service.repository.ProjectRepository;
 import com.vn.beta_testing.util.error.IdInvalidException;
 
@@ -75,5 +76,25 @@ public class ProjectService {
 
     public void deleteProject(Long id) {
         this.projectRepository.deleteById(id);
+    }
+
+
+    public ProjectDTO toDTO(Project entity) {
+        if (entity == null) return null;
+
+        ProjectDTO dto = new ProjectDTO();
+        dto.setId(entity.getId());
+        dto.setProjectName(entity.getProjectName());
+        dto.setDescription(entity.getDescription());
+        dto.setStatus(entity.isStatus());
+        dto.setStartDate(entity.getStartDate());
+        dto.setEndDate(entity.getEndDate());
+        dto.setBannerUrl(entity.getBannerUrl());
+        dto.setCreatedBy(entity.getCreatedBy());
+        if (entity.getCompanyProfile() != null) {
+            dto.setCompanyName(entity.getCompanyProfile().getCompanyName());
+        }
+
+        return dto;
     }
 }

@@ -20,7 +20,7 @@ public class CompanyService {
         this.userRepository = userRepository;
     }
 
-    private CompanyDTO toDTO(CompanyProfile entity) {
+    public CompanyDTO toDTO(CompanyProfile entity) {
         CompanyDTO dto = new CompanyDTO();
         dto.setId(entity.getId());
         dto.setCompanyName(entity.getCompanyName());
@@ -93,5 +93,6 @@ public class CompanyService {
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
+
 
 }

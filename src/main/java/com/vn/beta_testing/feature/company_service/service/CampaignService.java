@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.vn.beta_testing.domain.Campaign;
 import com.vn.beta_testing.domain.CampaignType;
+import com.vn.beta_testing.domain.CompanyProfile;
 import com.vn.beta_testing.domain.Project;
 import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.company_service.repository.CampaignRepository;
@@ -47,7 +48,6 @@ public class CampaignService {
 
         return rs;
     }
-
 
     public Campaign createCampaign(Campaign campaign) {
         if (campaign.getProject() != null) {
@@ -98,4 +98,29 @@ public class CampaignService {
         return campaignRepository.save(campaign);
     }
 
+    public CompanyProfile getCompanyByCampaign(Long campaignId) {
+        // Lấy campaign từ database
+        Campaign campaign = campaignRepository.findById(campaignId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy campaign với id = " + campaignId));
+
+        // Truy xuất ngược lại project
+        Project project = campaign.getProject();
+        if (project == null) {
+            throw new RuntimeException("Campaign chưa được gắn với Project nào");
+        }
+
+        // Truy xuất ngược lại company
+        CompanyProfile company = project.getCompanyProfile();
+        if (company == null) {
+            throw new RuntimeException("Project chưa được gắn với CompanyProfile nào");
+        }
+
+        return company;
+    }
+
+    public Project getProjectByCampaign(Long campaignId) {
+        Campaign campaign = campaignRepository.findById(campaignId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy campaign với id = " + campaignId));
+        return campaign.getProject();
+    }
 }
