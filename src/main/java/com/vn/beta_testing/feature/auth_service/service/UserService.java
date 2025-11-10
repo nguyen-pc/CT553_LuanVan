@@ -179,6 +179,14 @@ public class UserService {
         return this.userRepository.findByEmail(username);
     }
 
+    public ResUserDTO fetchUserByEmail(String email) {
+        User user = this.userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found with email: " + email);
+        }
+        return this.convertToResUserDTO(user);
+    }
+
     public boolean isEmailExist(String email) {
         return this.userRepository.existsByEmail(email);
     }

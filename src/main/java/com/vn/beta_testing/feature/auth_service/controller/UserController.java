@@ -154,4 +154,14 @@ public class UserController {
         List<ResUserDTO> newestUsers = userService.fetchTop10NewestUsers();
         return ResponseEntity.ok(newestUsers);
     }
+
+    @GetMapping("users/email/{email}")
+    public ResponseEntity<ResUserDTO> getUserByEmail(@PathVariable("email") String email) {
+        try {
+            ResUserDTO userDTO = userService.fetchUserByEmail(email);
+            return ResponseEntity.ok(userDTO);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
