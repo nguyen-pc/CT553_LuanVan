@@ -1,5 +1,9 @@
 package com.vn.beta_testing.feature.company_service.mapDTO;
 
+import com.vn.beta_testing.util.constant.GenderEnum;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +15,8 @@ public class UserRecruitProfileResponse {
     private Integer testerCount;
     private String devices;
     private String whitelist;
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private GenderEnum gender;
     private String country;
     private String zipcode;
     private String householdIncome;

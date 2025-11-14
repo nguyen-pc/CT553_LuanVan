@@ -96,7 +96,7 @@ public class EmailTesterService {
                 Campaign campaign = tester.getCampaign();
                 String campaignTitle = campaign.getTitle();
                 // String companyName = campaign.getCompany().getCompanyName();
-                String joinLink = "https://betatesting.vn/campaign/" + campaign.getId() + "/join";
+                String joinLink = "http://localhost:5174/home/detail/" + campaign.getId() ;
                 String companyName = "BetaTesting"; // Placeholder for company name
 
                 if (customMessage != null && !customMessage.trim().isEmpty()) {

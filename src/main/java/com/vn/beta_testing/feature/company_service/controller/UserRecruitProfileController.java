@@ -1,4 +1,4 @@
-    package com.vn.beta_testing.feature.company_service.controller;
+package com.vn.beta_testing.feature.company_service.controller;
 
 import java.util.List;
 
@@ -32,12 +32,12 @@ public class UserRecruitProfileController {
     // @GetMapping("/recruit-profile")
     // @ApiMessage("Get all recruit profiles")
     // public ResponseEntity<ResultPaginationDTO> getAllProfiles(
-    //         @Filter Specification<UserRecruitProfile> spec,
-    //         Pageable pageable) {
-    //     return ResponseEntity.ok(this.userRecruitProfileService.fetchAll(spec, pageable));
+    // @Filter Specification<UserRecruitProfile> spec,
+    // Pageable pageable) {
+    // return ResponseEntity.ok(this.userRecruitProfileService.fetchAll(spec,
+    // pageable));
     // }
 
-    
     @GetMapping("/recruit-profile")
     @ApiMessage("Get all recruit profiles")
     public ResponseEntity<List<UserRecruitProfileDTO>> getAllProfiles(
@@ -87,11 +87,16 @@ public class UserRecruitProfileController {
     // Cập nhật
     @PutMapping("/recruit-profile/update/{id}")
     @ApiMessage("Update recruit profile")
-    public ResponseEntity<UserRecruitProfile> update(@PathVariable("id") Long id,
+    public ResponseEntity<UserRecruitProfileResponse> update(
+            @PathVariable("id") Long id,
             @RequestBody UserRecruitProfile profile) {
+
         profile.setId(id);
         UserRecruitProfile updated = this.userRecruitProfileService.update(profile);
-        return ResponseEntity.ok(updated);
+        UserRecruitProfileResponse dto = new UserRecruitProfileResponse();
+        BeanUtils.copyProperties(updated, dto);
+        dto.setCampaignId(updated.getCampaign() != null ? updated.getCampaign().getId() : null);
+        return ResponseEntity.ok(dto);
     }
 
     // Xóa

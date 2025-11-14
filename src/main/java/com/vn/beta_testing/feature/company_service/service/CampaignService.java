@@ -9,6 +9,7 @@ import com.vn.beta_testing.domain.Campaign;
 import com.vn.beta_testing.domain.CampaignType;
 import com.vn.beta_testing.domain.CompanyProfile;
 import com.vn.beta_testing.domain.Project;
+import com.vn.beta_testing.domain.Module;
 import com.vn.beta_testing.domain.response.ResultPaginationDTO;
 import com.vn.beta_testing.feature.company_service.repository.CampaignRepository;
 import com.vn.beta_testing.util.error.IdInvalidException;
@@ -18,12 +19,14 @@ public class CampaignService {
     private final CampaignRepository campaignRepository;
     private final ProjectService projectService;
     private final CampaignTypeService campaignTypeService;
+    private final ModuleService moduleService;
 
     public CampaignService(CampaignRepository campaignRepository, ProjectService projectService,
-            CampaignTypeService campaignTypeService) {
+            CampaignTypeService campaignTypeService, ModuleService moduleService) {
         this.campaignRepository = campaignRepository;
         this.projectService = projectService;
         this.campaignTypeService = campaignTypeService;
+        this.moduleService = moduleService;
     }
 
     public Campaign fetchCampaignById(Long id) {
@@ -54,6 +57,11 @@ public class CampaignService {
             Project project = this.projectService.fetchProjectById(campaign.getProject().getId());
             campaign.setProject(project != null ? project : null);
         }
+        if (campaign.getModule() != null) {
+            Module module = this.moduleService.fetchModuleById(campaign.getModule().getId());
+            campaign.setModule(module != null ? module : null);
+        }
+
         if (campaign.getCampaignType() != null) {
             CampaignType campaignType = this.campaignTypeService
                     .fetchCampaignTypeById(campaign.getCampaignType().getId());
@@ -79,6 +87,11 @@ public class CampaignService {
             Project project = this.projectService.fetchProjectById(campaign.getProject().getId());
             existingCampaign.setProject(project != null ? project : null);
         }
+        if (campaign.getModule() != null) {
+            Module module = this.moduleService.fetchModuleById(campaign.getModule().getId());
+            existingCampaign.setModule(module != null ? module : null);
+        }
+        
         if (campaign.getCampaignType() != null) {
             // Assuming you have a CampaignTypeService to fetch CampaignType by ID
             CampaignType campaignType = this.campaignTypeService

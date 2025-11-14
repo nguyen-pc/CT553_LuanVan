@@ -89,4 +89,24 @@ public class SurveyController {
         this.surveyService.deleteSurvey(surveyId);
         return ResponseEntity.ok(null);
     }
+
+    @PutMapping("/campaign/{id}/survey/{surveyId}")
+    @ApiMessage("Update survey by id")
+    public ResponseEntity<Survey> updateSurvey(
+            @PathVariable("id") long campaignId,
+            @PathVariable("surveyId") long surveyId,
+            @Valid @RequestBody Survey survey) throws IdInvalidException {
+        Campaign campaign = campaignService.fetchCampaignById(campaignId);
+        if (campaign == null) {
+            throw new IdInvalidException("Campaign with id = " + campaignId + " does not exist.");
+        }
+
+        survey.setCampaign(campaign);
+        survey.setSurveyId(surveyId);
+
+        Survey updatedSurvey = surveyService.updateSurvey(survey);
+
+        return ResponseEntity.status(HttpStatus.OK).body(updatedSurvey);
+    }
+
 }

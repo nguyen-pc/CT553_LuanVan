@@ -60,6 +60,7 @@ public class Campaign {
     private String bannerUrl;
 
     private boolean isDraft = true;
+    private boolean isDeleted = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -69,6 +70,11 @@ public class Campaign {
     @JsonBackReference
     @JoinColumn(name = "project_id")
     private Project project;
+
+    @ManyToOne
+    @JsonBackReference("module-campaign")
+    @JoinColumn(name = "module_id")
+    private Module module;
 
     @ManyToOne
     @JoinColumn(name = "campaignType_id")

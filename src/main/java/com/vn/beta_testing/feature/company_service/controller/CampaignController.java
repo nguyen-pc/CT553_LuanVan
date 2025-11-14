@@ -97,6 +97,7 @@ public class CampaignController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCampaign);
     }
 
+
     @PutMapping("/campaign/update/{id}")
     @ApiMessage("Update campaign")
     public ResponseEntity<Campaign> updateCampaign(@PathVariable("id") Long id, @RequestBody Campaign campaign) {
