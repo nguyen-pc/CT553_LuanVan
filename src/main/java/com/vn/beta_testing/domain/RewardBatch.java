@@ -1,50 +1,57 @@
 package com.vn.beta_testing.domain;
 
-import java.time.Instant;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-import com.vn.beta_testing.util.constant.BatchStatus;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.vn.beta_testing.util.constant.RewardBatchStatus;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
-@Table(name = "reward_batches")
-@Getter
-@Setter
+@Table(name = "reward_batch")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class RewardBatch {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // thay vì @ManyToOne → dùng ID
+    @Column(name = "campaign_id", nullable = false)
+    private Long campaignId;
+
+    @Column(name = "company_id", nullable = false)
     private Long companyId;
-    private String batchCode;
-    private Integer totalUsers;
-    private Double totalAmount;
-    private String createdBy;
 
     @Enumerated(EnumType.STRING)
-    private BatchStatus status = BatchStatus.PENDING;
+    private RewardBatchStatus status = RewardBatchStatus.DRAFT;
 
-    @Column(columnDefinition = "TEXT")
-    private String paymentUrl; // link thanh toán VNPAY
+    private BigDecimal totalAmount;
 
-    private String transactionNo; // mã giao dịch VNPAY
-    private String vnpTxnRef; // mã tham chiếu VNPAY
-    private String vnpResponseCode;
-    private Instant createdAt = Instant.now();
-    private Instant paidAt;
+    private String note;
+
+    @Column(name = "approved_by")
+    private Long approvedById; // chỉ lưu id
+
+    @Column(name = "finalized_by")
+    private Long finalizedById;
+
+    private LocalDateTime finalizedAt;
+
+    private LocalDateTime approvedAt;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

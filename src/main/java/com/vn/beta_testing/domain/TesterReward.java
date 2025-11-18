@@ -1,43 +1,56 @@
 package com.vn.beta_testing.domain;
 
-import java.time.Instant;
-import com.vn.beta_testing.util.constant.RewardStatus;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import com.vn.beta_testing.util.constant.RewardBatchStatus;
+import com.vn.beta_testing.util.constant.RewardEvidenceType;
+import com.vn.beta_testing.util.constant.TesterRewardStatus;
+
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "tester_rewards")
-@Getter
-@Setter
+@Table(name = "tester_reward")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class TesterReward {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long testerCampaignId;
-    private Long userId;
-    private Long campaignId;
+    @Column(name = "reward_batch_id", nullable = false)
+    private Long rewardBatchId;
 
-    private Double amount;
-    private String proofUrl;
+    @Column(name = "tester_id", nullable = false)
+    private Long testerId;
+
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
-    private RewardStatus status = RewardStatus.PENDING;
+    private TesterRewardStatus status = TesterRewardStatus.PENDING;
 
-    private Instant requestedAt;
-    private Instant verifiedAt;
-    private Instant approvedAt;
-    private Instant transferredAt;
-    private Instant confirmedAt;
+    private String failureReason;
+    private String evidenceUrl;
 
-    private Boolean adminSlaViolated = false;
-    private Boolean companySlaViolated = false;
+    private String bankAccountNumber;
+    private String bankAccountName;
+    private String bankName;
 
-    private String verifiedBy;
-    private String approvedBy;
-    private String confirmedBy;
+    private LocalDateTime paidAt;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.vn.beta_testing.feature.auth_service.DTO.TesterStatisticSummaryDTO;
 import com.vn.beta_testing.feature.bug_service.repository.BugReportRepository;
 import com.vn.beta_testing.feature.register_campaign.repository.TesterCampaignRepository;
-import com.vn.beta_testing.feature.reward.repository.TesterRewardRepository;
+// import com.vn.beta_testing.feature.reward.repository.TesterRewardRepository;
 import com.vn.beta_testing.feature.test_execution.repository.TesterSurveyRepository;
 
 @Service
@@ -23,24 +23,25 @@ public class TesterStatisticService {
     private final TesterCampaignRepository testerCampaignRepo;
     private final BugReportRepository bugReportRepo;
     private final TesterSurveyRepository testerSurveyRepo;
-    private final TesterRewardRepository testerRewardRepo;
+    // private final TesterRewardRepository testerRewardRepo;
 
     public TesterStatisticService(
             TesterCampaignRepository testerCampaignRepo,
             BugReportRepository bugReportRepo,
-            TesterSurveyRepository testerSurveyRepo,
-            TesterRewardRepository testerRewardRepo) {
+            TesterSurveyRepository testerSurveyRepo
+            // TesterRewardRepository testerRewardRepo
+            ) {
         this.testerCampaignRepo = testerCampaignRepo;
         this.bugReportRepo = bugReportRepo;
         this.testerSurveyRepo = testerSurveyRepo;
-        this.testerRewardRepo = testerRewardRepo;
+        // this.testerRewardRepo = testerRewardRepo;
     }
 
     public TesterStatisticSummaryDTO getTesterStatistics(Long userId) {
         Long totalCampaigns = testerCampaignRepo.countByUserId(userId);
         Long totalBugs = bugReportRepo.countBugByUserId(userId);
         Long totalSurveys = testerSurveyRepo.countCompletedSurvey(userId);
-        Double totalRewards = testerRewardRepo.sumRewardsByUserId(userId);
+        // Double totalRewards = testerRewardRepo.sumRewardsByUserId(userId);
 
         Double engagementScore = totalCampaigns > 0
                 ? ((double) (totalBugs + totalSurveys) / totalCampaigns)
@@ -60,7 +61,7 @@ public class TesterStatisticService {
                 .totalCampaigns(totalCampaigns)
                 .totalBugs(totalBugs)
                 .totalSurveys(totalSurveys)
-                .totalRewards(totalRewards)
+                // .totalRewards(totalRewards)
                 .engagementScore(engagementScore)
                 .bugTrend(bugTrend)
                 .campaignTrend(campaignTrend)

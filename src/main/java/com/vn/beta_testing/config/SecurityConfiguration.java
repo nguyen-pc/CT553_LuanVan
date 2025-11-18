@@ -54,7 +54,8 @@ public class SecurityConfiguration {
                 "/api/v1/project/{id}/campaigns",
                 "/api/v1/campaigns/**",
                 "/api/v1/email/**",
-                "/api/v1/company/create"
+                "/api/v1/company/create",
+                "/api/v1/campaign/**"
         };
 
         http
