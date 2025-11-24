@@ -86,6 +86,12 @@ public class ModuleService {
                 .orElseThrow(() -> new RuntimeException("Module not found"));
     }
 
+    public ModuleResponseDTO getModuleByCampaignId(Long campaignId) {
+        return moduleRepository.findModuleByCampaignId(campaignId)
+                .map(this::toDTO)
+                .orElseThrow(() -> new RuntimeException("Module not found"));
+    }
+
     public List<ModuleResponseDTO> getModulesByProject(Long projectId) {
         return moduleRepository.findByProjectId(projectId)
                 .stream()

@@ -45,6 +45,13 @@ public class ModuleController {
         return ResponseEntity.ok(moduleService.getModulesByProject(projectId));
     }
 
+    @GetMapping("/campaign/{campaignId}")
+    @ApiMessage("Module retrieved successfully by campaignId")
+    public ResponseEntity<ModuleResponseDTO> getModuleByCampaignId(
+            @PathVariable("campaignId") Long campaignId) {
+        return ResponseEntity.ok(moduleService.getModuleByCampaignId(campaignId));
+    }
+
     @DeleteMapping("/{id}")
     @ApiMessage("Module deleted successfully")
     public ResponseEntity<String> deleteModule(@PathVariable("id") Long id) {

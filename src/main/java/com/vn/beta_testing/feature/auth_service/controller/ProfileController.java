@@ -28,7 +28,7 @@ public class ProfileController {
     @PostMapping("/{userId}")
     @ApiMessage("Create or update user profile")
     public ResponseEntity<UserProfileDTO> saveOrUpdateProfile(
-            @PathVariable Long userId,
+            @PathVariable("userId") Long userId,
             @RequestBody UserProfile profileData) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(profileService.saveOrUpdateProfile(userId, profileData));
