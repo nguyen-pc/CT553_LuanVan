@@ -91,7 +91,7 @@ public class CampaignService {
             Module module = this.moduleService.fetchModuleById(campaign.getModule().getId());
             existingCampaign.setModule(module != null ? module : null);
         }
-        
+
         if (campaign.getCampaignType() != null) {
             // Assuming you have a CampaignTypeService to fetch CampaignType by ID
             CampaignType campaignType = this.campaignTypeService
@@ -135,5 +135,13 @@ public class CampaignService {
         Campaign campaign = campaignRepository.findById(campaignId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy campaign với id = " + campaignId));
         return campaign.getProject();
+    }
+
+    public void deleteCampaign(Long id) {
+        Campaign campaign = campaignRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Campaign not found with id: " + id));
+
+        campaign.setDeleted(true); // hoặc setDeleted(true) tùy tên field
+        campaignRepository.save(campaign);
     }
 }

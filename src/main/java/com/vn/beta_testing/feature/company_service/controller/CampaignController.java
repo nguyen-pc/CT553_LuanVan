@@ -205,4 +205,11 @@ public class CampaignController {
         return ResponseEntity.ok(companyDTO);
     }
 
+    @DeleteMapping("/campaign/delete/{id}")
+    @ApiMessage("Delete campaign successfully")
+    public ResponseEntity<Void> deleteCampaign(@PathVariable("id") Long id) {
+        campaignService.deleteCampaign(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
