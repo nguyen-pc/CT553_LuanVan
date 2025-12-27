@@ -56,6 +56,7 @@ public class SurveyController {
         if (surveys == null) {
             return ResponseEntity.notFound().build();
         }
+        System.out.println("Surveys fetched: " + surveys);
 
         List<SurveyDTO> dtos = SurveyMapper.toDTOList(surveys);
         return ResponseEntity.ok(dtos);
@@ -84,10 +85,20 @@ public class SurveyController {
         return ResponseEntity.status(HttpStatus.OK).body(resSurvey);
     }
 
+    // @DeleteMapping("/campaign/{id}/survey/{surveyId}")
+    // public ResponseEntity<Void> deleteSurvey(@PathVariable("id") long id, @PathVariable("surveyId") long surveyId) {
+    //     this.surveyService.deleteSurvey(surveyId);
+    //     return ResponseEntity.ok(null);
+    // }
+
     @DeleteMapping("/campaign/{id}/survey/{surveyId}")
-    public ResponseEntity<Void> deleteSurvey(@PathVariable("id") long id, @PathVariable("surveyId") long surveyId) {
-        this.surveyService.deleteSurvey(surveyId);
-        return ResponseEntity.ok(null);
+    @ApiMessage("Soft delete survey")
+    public ResponseEntity<Void> deleteSurvey(
+            @PathVariable("id") long id,
+            @PathVariable("surveyId") long surveyId) {
+
+        surveyService.softDeleteSurvey(surveyId);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/campaign/{id}/survey/{surveyId}")

@@ -18,8 +18,9 @@ public class DownloadScanController {
      * POST /api/v1/censor/scan-download?url=https://example.com/file.apk
      */
     @PostMapping("/scan-download")
-    public ResponseEntity<?> scanDownload(@RequestParam("url") String url) {
+    public ResponseEntity<?> scanDownload(@RequestParam(value = "url", required = false) String url) {
         if (url == null || url.isBlank()) {
+            System.out.println("Missing URL parameter for scanDownload");
             return ResponseEntity.badRequest()
                     .body(Map.of("status", "ERROR", "message", "URL parameter is required"));
         }

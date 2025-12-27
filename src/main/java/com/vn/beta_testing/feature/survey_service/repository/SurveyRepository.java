@@ -14,6 +14,8 @@ import com.vn.beta_testing.domain.Survey;
 public interface SurveyRepository extends JpaRepository<Survey, Long>, JpaSpecificationExecutor<Survey> {
     List<Survey> findByCampaign_Id(long campaignId);
 
+    List<Survey> findByCampaign_IdAndIsDeletedFalse(Long campaignId);
+
     @Query("SELECT COUNT(s) FROM Survey s WHERE s.campaign.id = :campaignId")
     int countByCampaignId(@Param("campaignId") Long campaignId);
 }

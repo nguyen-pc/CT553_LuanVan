@@ -12,6 +12,7 @@ public class SurveyDTO {
     private String surveyName;
     private String subTitle;
     private String description;
+    private boolean isDeleted;
     private Instant startDate;
     private Instant endDate;
     private Instant createdAt;

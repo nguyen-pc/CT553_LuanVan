@@ -1,6 +1,7 @@
 package com.vn.beta_testing.feature.survey_service.service;
 
 import java.lang.StackWalker.Option;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,11 +54,23 @@ public class SurveyService {
         surveyRepository.deleteById(surveyId);
     }
 
+    public void softDeleteSurvey(long surveyId) {
+        Optional<Survey> optionalSurvey = surveyRepository.findById(surveyId);
+        if (optionalSurvey.isEmpty()) {
+            throw new IdInvalidException("Survey with id = " + surveyId + " does not exist.");
+        }
+
+        Survey survey = optionalSurvey.get();
+        survey.setDeleted(true); // đánh dấu đã xóa
+        survey.setUpdatedAt(Instant.now()); // cập nhật thời gian
+        surveyRepository.save(survey);
+    }
+
     public List<Survey> getSurveysByCampaignId(long campaignId) {
         Campaign campaign = campaignService.fetchCampaignById(campaignId);
         if (campaign == null) {
             return null;
         }
-        return surveyRepository.findByCampaign_Id(campaign.getId());
+        return surveyRepository.findByCampaign_IdAndIsDeletedFalse(campaign.getId());
     }
 }

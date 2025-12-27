@@ -38,6 +38,7 @@ public class Survey {
     private String subTitle;
     @Column(columnDefinition = "TEXT")
     private String description;
+    private boolean isDeleted = false;
     private Instant startDate;
     private Instant endDate;
     private Instant createdAt;

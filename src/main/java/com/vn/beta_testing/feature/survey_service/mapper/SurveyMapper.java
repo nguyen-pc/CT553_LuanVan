@@ -12,6 +12,7 @@ public class SurveyMapper {
         dto.setSurveyName(s.getSurveyName());
         dto.setSubTitle(s.getSubTitle());
         dto.setDescription(s.getDescription());
+        dto.setDeleted(s.isDeleted());
         dto.setStartDate(s.getStartDate());
         dto.setEndDate(s.getEndDate());
         dto.setCreatedAt(s.getCreatedAt());

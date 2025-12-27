@@ -6,7 +6,8 @@ public record AskRequest(
         String sessionId,
         String mode,
         String message,
-        Long userId
+        Long userId,
+        Long campaignId
         ) {
 }
 
